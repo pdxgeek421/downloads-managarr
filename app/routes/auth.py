@@ -1,8 +1,8 @@
 """
 Simple session-based authentication.
 
-Auth is enabled only when both ADMIN_USERNAME and ADMIN_PASSWORD environment
-variables are set.  If neither is set the app behaves exactly as before —
+Auth is enabled only when both DL_MANAGARR_ADMIN_USERNAME and DL_MANAGARR_ADMIN_PASSWORD
+environment variables are set.  If neither is set the app behaves exactly as before —
 no login screen, no cookies.
 """
 
@@ -19,8 +19,8 @@ router = APIRouter()
 # Configuration (read once at startup)
 # ---------------------------------------------------------------------------
 
-ADMIN_USERNAME: str = os.environ.get("ADMIN_USERNAME", "")
-ADMIN_PASSWORD: str = os.environ.get("ADMIN_PASSWORD", "")
+ADMIN_USERNAME: str = os.environ.get("DL_MANAGARR_ADMIN_USERNAME", "")
+ADMIN_PASSWORD: str = os.environ.get("DL_MANAGARR_ADMIN_PASSWORD", "")
 AUTH_REQUIRED: bool = bool(ADMIN_USERNAME and ADMIN_PASSWORD)
 
 COOKIE_NAME = "managarr_session"

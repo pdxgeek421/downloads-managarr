@@ -15,8 +15,8 @@ services:
       # Set both variables to enable the login screen.
       # Leave them unset (or commented out) to run without any authentication.
       # Recommended: set these in a .env file and never commit it.
-      # - ADMIN_USERNAME=changeme
-      # - ADMIN_PASSWORD=changeme
+      # - DL_MANAGARR_ADMIN_USERNAME=changeme
+      # - DL_MANAGARR_ADMIN_PASSWORD=changeme
 
       # ── Source folders ─────────────────────────────────────────────────────
       # Define your download sources here instead of (or in addition to) the

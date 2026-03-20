@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.0.1] - 2026-03-19 — Auth env var rename
+
+### Changed
+- Renamed `ADMIN_USERNAME` → `DL_MANAGARR_ADMIN_USERNAME` and `ADMIN_PASSWORD` → `DL_MANAGARR_ADMIN_PASSWORD` to avoid collisions in a shared `.env` used by multiple services (Sonarr, Radarr, etc.)
+
+---
+
 ## [1.0.0] - 2026-03-19 — First Public Release
 
 ### Fixed
@@ -122,7 +129,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.9.0] — Authentication
 
 ### Added
-- Optional login screen shown on load when `ADMIN_USERNAME` / `ADMIN_PASSWORD` env vars are set.
+- Optional login screen shown on load when `DL_MANAGARR_ADMIN_USERNAME` / `DL_MANAGARR_ADMIN_PASSWORD` env vars are set.
 - Session-based auth with an `httponly` cookie; all `/api/*` routes protected when auth is enabled.
 - *Keep me logged in* → 30-day persistent cookie; unchecked → browser-session cookie (24h server-side cap).
 - Expired or invalid session re-shows the login screen automatically.

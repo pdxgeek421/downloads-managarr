@@ -598,7 +598,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.0.0</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.0.1</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -1471,7 +1471,7 @@
             <div class="help-feature-icon">🔐</div>
             <div class="help-feature-body">
               <div class="help-feature-title">Login</div>
-              <p class="help-feature-desc">Set <code>ADMIN_USERNAME</code> and <code>ADMIN_PASSWORD</code> in your Docker environment to enable a login screen. Check <em>Keep me logged in</em> for a 30-day persistent session; leave it unchecked for a session cookie that expires when the browser closes (24h server-side cap). Omit both variables to run without authentication.</p>
+              <p class="help-feature-desc">Set <code>DL_MANAGARR_ADMIN_USERNAME</code> and <code>DL_MANAGARR_ADMIN_PASSWORD</code> in your Docker environment to enable a login screen. Check <em>Keep me logged in</em> for a 30-day persistent session; leave it unchecked for a session cookie that expires when the browser closes (24h server-side cap). Omit both variables to run without authentication.</p>
             </div>
           </div>
           <div class="help-feature">
@@ -1502,9 +1502,19 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.0.1</span>
+          <span class="cl-version-name">Auth env var rename</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Changed:</strong> Renamed <code>ADMIN_USERNAME</code> → <code>DL_MANAGARR_ADMIN_USERNAME</code> and <code>ADMIN_PASSWORD</code> → <code>DL_MANAGARR_ADMIN_PASSWORD</code> to avoid collisions in a shared <code>.env</code> used by multiple services</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.0.0</span>
           <span class="cl-version-name">First Public Release</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Fixed:</strong> Empty subfolder now always shows the <code>..</code> back row; empty-state message is context-aware ("This folder is empty." vs source-root message)</li>
@@ -1588,7 +1598,7 @@
           <span class="cl-version-name">Authentication</span>
         </div>
         <ul class="cl-items">
-          <li>Login screen shown on load when <code>ADMIN_USERNAME</code> / <code>ADMIN_PASSWORD</code> are set in the Docker environment</li>
+          <li>Login screen shown on load when <code>DL_MANAGARR_ADMIN_USERNAME</code> / <code>DL_MANAGARR_ADMIN_PASSWORD</code> are set in the Docker environment</li>
           <li>Session-based auth with an <code>httponly</code> cookie; all API routes protected when auth is enabled</li>
           <li><em>Keep me logged in</em> → 30-day persistent cookie; unchecked → browser-session cookie (24h server-side cap)</li>
           <li>Any expired or invalid session re-shows the login screen automatically</li>

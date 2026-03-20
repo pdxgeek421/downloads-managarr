@@ -73,7 +73,7 @@ There's no good middle ground. Until you just... build one.
 - History entries for trashed files survive a "Clear History" — locked until the file is restored or permanently deleted
 
 ### Authentication (optional)
-- Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your environment to enable a login screen
+- Set `DL_MANAGARR_ADMIN_USERNAME` and `DL_MANAGARR_ADMIN_PASSWORD` in your environment to enable a login screen
 - Session-based auth with an `httponly` cookie — 30 days with *Keep me logged in*, 24 hours otherwise
 - All `/api/*` routes are protected when auth is enabled; auth endpoints are always public
 - Omit the env vars entirely to run with no login — behaves exactly as before
@@ -200,8 +200,8 @@ ssh user@server "cd /opt/downloads-managarr && docker compose up --build -d"
 | `PUID` | `1000` | UID the container process runs as |
 | `PGID` | `1000` | GID the container process runs as |
 | `DOWNLOADS_MANAGARR_PORT` | `8080` | Host port to bind |
-| `ADMIN_USERNAME` | *(unset)* | Login username — **leave unset to disable auth entirely** |
-| `ADMIN_PASSWORD` | *(unset)* | Login password — **leave unset to disable auth entirely** |
+| `DL_MANAGARR_ADMIN_USERNAME` | *(unset)* | Login username — **leave unset to disable auth entirely** |
+| `DL_MANAGARR_ADMIN_PASSWORD` | *(unset)* | Login password — **leave unset to disable auth entirely** |
 
 ### State File Paths
 
@@ -331,7 +331,7 @@ To test with auth enabled:
 
 ```bash
 CONFIG_PATH=./config/config.json DB_PATH=./config/state.db \
-  ADMIN_USERNAME=admin ADMIN_PASSWORD=admin \
+  DL_MANAGARR_ADMIN_USERNAME=admin DL_MANAGARR_ADMIN_PASSWORD=admin \
   uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 

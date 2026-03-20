@@ -18,8 +18,8 @@ Environment=PREFS_PATH=/opt/downloads-managarr/config/user_prefs.json
 # ── Optional ───────────────────────────────────────────────────────────────
 Environment=DOWNLOADS_MANAGARR_PORT=8080
 # Set both to enable the login screen; leave unset to run without auth.
-# Environment=ADMIN_USERNAME=changeme
-# Environment=ADMIN_PASSWORD=changeme
+# Environment=DL_MANAGARR_ADMIN_USERNAME=changeme
+# Environment=DL_MANAGARR_ADMIN_PASSWORD=changeme
 
 # ── Sources / destinations / trash (alternative to the Settings UI) ────────
 # Environment=SOURCE_0_PATH=/data/completed

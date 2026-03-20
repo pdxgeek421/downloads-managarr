@@ -1,0 +1,47 @@
+[Unit]
+Description=Downloads-Managarr file management web app
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=1000
+Group=1000
+WorkingDirectory=/opt/downloads-managarr
+
+# ── Required paths ─────────────────────────────────────────────────────────
+Environment=CONFIG_PATH=/opt/downloads-managarr/config/config.json
+Environment=DB_PATH=/opt/downloads-managarr/config/state.db
+Environment=LOG_PATH=/opt/downloads-managarr/config/app.log
+Environment=PREFS_PATH=/opt/downloads-managarr/config/user_prefs.json
+
+# ── Optional ───────────────────────────────────────────────────────────────
+Environment=DOWNLOADS_MANAGARR_PORT=8080
+# Set both to enable the login screen; leave unset to run without auth.
+# Environment=ADMIN_USERNAME=changeme
+# Environment=ADMIN_PASSWORD=changeme
+
+# ── Sources / destinations / trash (alternative to the Settings UI) ────────
+# Environment=SOURCE_0_PATH=/data/completed
+# Environment=SOURCE_0_LABEL=Completed
+# Environment=DEST_0_PATH=/media/tv
+# Environment=DEST_0_LABEL=TV Shows
+# Environment=DEST_0_TYPE=tv
+# Environment=TRASH_FOLDER=/data/trash
+
+# Create a virtualenv at /opt/downloads-managarr/venv and install requirements there,
+# then point ExecStart at its uvicorn binary.
+ExecStart=/opt/downloads-managarr/venv/bin/uvicorn app.main:app \
+    --host 0.0.0.0 \
+    --port 8080
+
+Restart=on-failure
+RestartSec=5s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=downloads-managarr
+
+[Install]
+WantedBy=multi-user.target

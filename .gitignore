@@ -1,0 +1,32 @@
+# Runtime state directory — never commit real data or credentials
+# The config/ directory is created by the user and holds live state.
+config/
+
+# Legacy flat-file paths (pre-SQLite) and any location they may appear
+config.json
+queue.json
+history.json
+user_prefs.json
+state.db
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Docker / secrets
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code
+.claude/

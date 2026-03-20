@@ -1,0 +1,70 @@
+services:
+  downloads-managarr:
+    build: .
+    container_name: downloads-managarr
+    restart: unless-stopped
+    ports:
+      - "${DOWNLOADS_MANAGARR_PORT:-8080}:8080"
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - CONFIG_PATH=/config/config.json
+      - DB_PATH=/config/state.db
+
+      # ── Authentication ─────────────────────────────────────────────────────
+      # Set both variables to enable the login screen.
+      # Leave them unset (or commented out) to run without any authentication.
+      # Recommended: set these in a .env file and never commit it.
+      # - ADMIN_USERNAME=changeme
+      # - ADMIN_PASSWORD=changeme
+
+      # ── Source folders ─────────────────────────────────────────────────────
+      # Define your download sources here instead of (or in addition to) the
+      # Settings UI.  Entries are numbered from 0; scanning stops at the first
+      # missing index.  LABEL is optional — defaults to the folder's basename.
+      # These are injected at runtime and never written to config.json, so
+      # they always reflect the current environment.
+      #
+      # - SOURCE_0_PATH=/data/completed
+      # - SOURCE_0_LABEL=Completed
+      # - SOURCE_1_PATH=/data/usenet/completed
+      # - SOURCE_1_LABEL=Usenet
+      # - SOURCE_2_PATH=/data/torrents/completed
+      # - SOURCE_2_LABEL=Torrents
+
+      # ── Destination folders ────────────────────────────────────────────────
+      # TYPE must match one of your configured media types (default: tv, movie,
+      # music, games).  LABEL is optional.
+      #
+      # - DEST_0_PATH=/media/tv
+      # - DEST_0_LABEL=TV Shows
+      # - DEST_0_TYPE=tv
+      # - DEST_1_PATH=/media/movies
+      # - DEST_1_LABEL=Movies
+      # - DEST_1_TYPE=movie
+      # - DEST_2_PATH=/media/music
+      # - DEST_2_LABEL=Music
+      # - DEST_2_TYPE=music
+
+      # ── Trash folder ───────────────────────────────────────────────────────
+      # When set, overrides the trash path from the Settings UI.
+      # - TRASH_FOLDER=/data/trash
+
+    volumes:
+      # ── Config / state directory ────────────────────────────────────────────
+      # Mount a host directory to /config so that config.json and state.db
+      # (SQLite) survive container restarts.  state.db is created automatically.
+      - ./config:/config
+
+      # ── Source folders — must match the paths configured above ─────────────
+      # - /data/completed:/data/completed
+      # - /data/usenet/completed:/data/usenet/completed
+      # - /data/torrents/completed:/data/torrents/completed
+
+      # ── Destination folders ────────────────────────────────────────────────
+      # - /media/tv:/media/tv
+      # - /media/movies:/media/movies
+      # - /media/music:/media/music
+
+      # ── Trash folder ───────────────────────────────────────────────────────
+      # - /data/trash:/data/trash

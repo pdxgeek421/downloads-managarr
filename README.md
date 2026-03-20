@@ -106,88 +106,53 @@ There's no good middle ground. Until you just... build one.
 ### 1. Clone
 
 ```bash
-git clone <repo-url> downloads-managarr
-cd downloads-managarr
+git clone https://github.com/pdxgeek421/downloads-managarr.git /opt/downloads-managarr
+cd /opt/downloads-managarr
 ```
 
-### 2. Create the config directory
+### 2. Configure volume mounts
 
-The app stores `config.json` and the SQLite database (`state.db`) in a single directory mounted to `/config`. Create it and seed an empty config:
-
-```bash
-mkdir -p config
-echo '{"sources":[],"destinations":[],"trash_folder":null}' > config/config.json
-```
-
-`state.db` is created automatically on first boot — no manual step needed.
-
-### 3. Edit `docker-compose.yml`
-
-Uncomment and adjust the volume mounts to match your host paths:
+Edit `docker-compose.yml` and uncomment/adjust the volume mounts to match your host paths. Use the same path on both sides of the `:` so what you enter in the Settings UI matches what's on disk:
 
 ```yaml
 volumes:
-  # Config + state (config.json + state.db live here)
-  - ./config:/config
-
-  # Source folders — where your downloads land
-  - /data/completed:/data/completed
-  - /data/usenet/completed:/data/usenet/completed
-
-  # Destination folders — your media library
-  - /media/tv:/media/tv
-  - /media/movies:/media/movies
-
-  # Trash
-  - /data/trash:/data/trash
+  - /storage/appdata/downloads-managarr:/config
+  - /storage/downloads/completed:/storage/downloads/completed
+  - /storage/media:/storage/media
 ```
 
 > **Important:** The container-side path (right of the `:`) is what you enter in the Settings UI. They must match exactly.
 
-### 4. Set your UID/GID (recommended)
+### 3. Add credentials to your `.env`
 
-This makes the app run as your user so it can read and write your files without permission headaches:
+If you share a `.env` across multiple containers (Sonarr, Radarr, etc.), add these lines:
 
-```bash
-echo "PUID=$(id -u)" >> .env
-echo "PGID=$(id -g)" >> .env
+```env
+DL_MANAGARR_ADMIN_USERNAME=youruser
+DL_MANAGARR_ADMIN_PASSWORD=yourpassword
 ```
 
-### 5. Build and start
+Leave them out entirely to run without a login screen.
+
+### 4. Build and start
 
 ```bash
 docker compose up --build -d
 ```
 
-Open **http://localhost:8080** (or whatever host/port you've configured).
+Open **http://localhost:8080** (or whatever host/port you've configured). `config.json`, `state.db`, and `user_prefs.json` are all created automatically on first boot — no manual seeding needed.
 
 ---
 
-## Deploying to a Remote Server
+## Updating
 
 ```bash
-# Copy files to server (first time or update)
-rsync -av --exclude '.git' --exclude '__pycache__' --exclude 'venv' \
-  ./ user@server:/opt/downloads-managarr/
-
-# SSH in and start
-ssh user@server
 cd /opt/downloads-managarr
-mkdir -p config
-[ -f config/config.json ] || echo '{"sources":[],"destinations":[],"trash_folder":null}' > config/config.json
+git pull
 docker compose up --build -d
 ```
 
-### Updating
-
-```bash
-rsync -av --exclude '.git' --exclude '__pycache__' --exclude 'venv' \
-  ./ user@server:/opt/downloads-managarr/
-
-ssh user@server "cd /opt/downloads-managarr && docker compose up --build -d"
-```
-
-`config/config.json`, `config/state.db`, and `config/user_prefs.json` are all inside the mounted `/config` directory and survive rebuilds untouched.
+All state lives in `/storage/appdata/downloads-managarr` (the mounted `/config` directory) and survives rebuilds untouched.
 
 ---
 

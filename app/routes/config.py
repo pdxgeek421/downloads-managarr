@@ -137,6 +137,9 @@ def get_config() -> dict:
 
     if not CONFIG_PATH.exists():
         stored: dict = DEFAULT_CONFIG.copy()
+        CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(CONFIG_PATH, "w") as f:
+            json.dump(stored, f, indent=2)
     else:
         try:
             with open(CONFIG_PATH) as f:

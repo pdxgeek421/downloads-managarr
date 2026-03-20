@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-## [0.11.1] - 2026-03-19 — Security, Bug Fixes & Performance
+## [1.0.0] - 2026-03-19 — First Public Release
 
 ### Fixed
 

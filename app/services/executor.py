@@ -157,6 +157,16 @@ def atomic_move(source: str, final_dest: str) -> None:
         else:
             os.remove(source)
     except OSError as exc:
+        # Check whether .nfs* NFS open-file placeholders are the only obstacle
+        if os.path.isdir(source):
+            remnants = [f for f in os.listdir(source) if f.startswith('.nfs')]
+            if remnants:
+                logger.info(
+                    "Atomic move: source %r not removed — %d .nfs* lock file(s) remain "
+                    "(NFS open-file placeholders; auto-cleaned by OS when handles close)",
+                    source, len(remnants),
+                )
+                return  # transfer is complete; leave cleanup to the OS
         logger.warning("Atomic move: destination committed but source delete failed: %s", exc)
 
 
@@ -257,6 +267,9 @@ def execute_action(
     if action_type == "delete_trash":
         if not trash_folder:
             raise ValueError("No trash folder configured")
+        # Auto mode: create .Trash folder in the same directory as the source
+        if trash_folder == "__auto__":
+            trash_folder = os.path.join(os.path.dirname(source_path), ".Trash")
         os.makedirs(trash_folder, exist_ok=True)
         source_name = os.path.basename(source_path)
         dest = os.path.join(trash_folder, source_name)
@@ -303,7 +316,16 @@ def execute_action(
             try:
                 os.rmdir(source_path)
             except OSError:
-                pass
+                # Check for .nfs* remnants before silently ignoring
+                if os.path.isdir(source_path):
+                    nfs = [f for f in os.listdir(source_path) if f.startswith('.nfs')]
+                    if nfs:
+                        verb = "Moved" if action_type == "move" else "Copied"
+                        return (
+                            f"{verb} {len(moved)} item(s) from '{os.path.basename(source_path)}' → {dest_base}"
+                            f" ⚠ Source folder not removed: {len(nfs)} .nfs* lock file(s) left by NFS — auto-cleans when OS releases file handles",
+                            dest_base,
+                        )
         verb = "Moved" if action_type == "move" else "Copied"
         return f"{verb} {len(moved)} item(s) from '{os.path.basename(source_path)}' → {dest_base}", dest_base
 
@@ -352,7 +374,16 @@ def execute_action(
                         n += 1
                     return _perform_transfer(action, dest_folder, new_name)
 
-        return _perform_transfer(action, dest_folder, item_name)
+        msg, final_dest = _perform_transfer(action, dest_folder, item_name)
+        # Warn if source folder remains with only .nfs* lock files after a move
+        if action_type == "move" and os.path.isdir(source_path):
+            nfs = [f for f in os.listdir(source_path) if f.startswith('.nfs')]
+            if nfs:
+                msg += (
+                    f" ⚠ Source folder not removed: {len(nfs)} .nfs* lock file(s) left by NFS"
+                    " — auto-cleans when OS releases file handles"
+                )
+        return msg, final_dest
 
     # ----- Extract archive -----
     if action_type == "extract":

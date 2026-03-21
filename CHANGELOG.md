@@ -5,6 +5,64 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.2.0] - 2026-03-20 — Auto Trash & Settings Cleanup
+
+### Changed
+- **Toggle unrecognized files** — the ❓ filter-bar button was renamed from "Hide Unknown" to "Toggle unrecognized files". Logic is now inverted: toggled **on** shows unrecognized files, toggled **off** hides them. Default is **on** (shown). The matching Settings checkbox was moved from Behavior to **Appearance → File List** and is labelled "Show unrecognized files (❓ Unknown)".
+- **Settings → Behavior: Queue Defaults** — the "File Defaults" and "Folder Defaults" sections were merged into a single **Queue Defaults** section; the File Browser subsection was removed from Behavior entirely (its "Show Unknown" toggle moved to Appearance).
+- **Settings → Housekeeping: Destination Free Space + Storage Color merged** — the separate "Storage Availability Color" section was folded into the "Destination Free Space" section under a divider, reducing visual clutter.
+- **Trash mode "Disabled" renamed to "Off"** — the radio option in Settings → Housekeeping now reads "Off" instead of "Disabled" for brevity.
+- **Color picker CSS classes extracted** — inline color-picker styles replaced with shared CSS classes (`.cp-row`, `.cp-picker`, `.cp-picker-lg`, `.cp-hex`, `.cp-hex-lg`, `.cp-label`) to keep markup clean.
+
+### Fixed
+- **Auto trash mode fully functional** — `trash.py` was missing all auto-mode support: listing, deleting individual items, and emptying the trash now correctly scan `.Trash` folders co-located with source files. The scan covers the source root and one level of immediate subdirectories. Path validation for `DELETE /api/trash/item` in auto mode checks that the item lives inside a `.Trash` folder that itself sits within a configured source directory.
+- **Revert-of-restore in auto mode** — the history revert handler now resolves the correct `.Trash` path when reverting a restore that originated from an auto-trash operation.
+- **Sources/Destinations separator spacing symmetric** — separator used custom left/right margins that caused unequal padding on desktop and opposite issues on mobile. Now relies solely on the flex container's `gap` property (`margin: 0` on the separator) so spacing is identical on both sides on all viewports.
+- **Trash and mobile queue button emoji size** — added `font-size: 16px` to both buttons so the emoji renders at the same scale as other icon buttons after the button-padding reduction in v1.1.0.
+
+---
+
+## [1.1.0] - 2026-03-20 — UX Polish & Mobile Improvements
+
+### Added
+- **Source filter buttons in toolbar** — toolbar row 1 shows per-source buttons (with free-space labels) alongside destination buttons, each with "Sources" / "Destinations" section labels. Clicking a source button filters the file list to that source only.
+- **Collapsible Sources & Destinations bar** — a click-to-toggle bar sits between the header and the sources/destinations row; state persists across sessions via `localStorage`.
+- **Storage availability color settings** — new Appearance section to color free-space labels by a 4-level meter (plenty ≥50% green, medium 20–50% yellow, low 10–20% orange, warning <10% red) or a single static color (Accent or Custom hex); all thresholds individually customizable.
+- **Trash mode selection** — Settings → Behavior now offers three trash modes: **Disabled** (no trash action), **Auto** (creates a `.Trash` folder beside the file at execute time — default), and **Custom** (explicit configured path). The auto mode requires no pre-configuration and keeps trash alongside its source.
+- **Hide Unknown file type toggle** — ❓ button in the filter bar hides unrecognized files from the list; also available as a checkbox in Settings → Behavior.
+- **Assign Unknown type to any file/folder** — the Unknown option now appears in the media-type dropdown for all rows, not just already-unknown files. Useful for correcting mis-detected items.
+- **Confirmation dialogs for destructive settings actions** — removing a source folder, destination folder, or entire media type section now prompts for confirmation. A "Don't ask again" pref suppresses future prompts.
+- **Clear Queue / Clear History confirmations** — both buttons now show a confirmation modal with a "Don't ask again" checkbox; the choice is saved per user.
+- **Favicon** — browser tab/bookmark now shows the ⬇ logo icon on a purple background.
+- **Empty folder offer in confirm dialog** — execution confirmation now shows a "Delete source folder(s) if empty after move" checkbox (pre-checked from Behavior default) with a link to make it permanent.
+- **Trash → Sources tip** — trash modal shows a one-time callout suggesting you add the trash folder as a source for in-app browsing.
+- **/dev/shm recommendation** — Extract Temp Folder in Housekeeping settings includes a one-click "Use /dev/shm →" link for shared-memory extraction.
+
+### Changed
+- **Toolbar layout** — All / Files / Folders filter buttons moved to the LEFT of the filter search input; filter input widens to fill available space; left-aligned with the Name column.
+- **Column padding** — Source / Type / Size / Modified column padding reduced to 6 px to reclaim horizontal space.
+- **Column alignment** — Source, Type, Size, and Modified columns right-justified.
+- **Refresh icon** — enlarged to 1.9 em (32×32 px squared, lighter weight, larger fill); button size unchanged.
+- **Header dropdown icons** — ⚙ / ? / ⏏ icons standardized to 16 px / 20 px container.
+- **Media Types settings UI** — type-tag pills row removed; each destination section header carries its own × remove button and inline icon editor. Suggestion tooltip moved next to the Add button.
+- **Button padding** — internal horizontal padding reduced by 6 px across all buttons.
+- **Trash button** — icon-only (trash can emoji, no text label) to save toolbar space.
+- **Clear buttons renamed** — "Clear" → "Clear Queue" and "Clear History" for clarity.
+- **Library settings** — Name field narrowed to 40 px (flex-none); location path field expands to fill remaining row width; rows are single-line on mobile (no wrapping).
+- **Static color mode** — Accent / Custom radio sub-options; selecting Accent uses `var(--accent)` so the label always matches the theme.
+
+### Fixed
+- **Complete Series misdetected as movie** — `TV_COMPLETE_RE` pattern catches "COMPLETE SERIES / SEASON / PACK / SHOW / BOX SET / FULL SERIES" and blocks the movie fallthrough.
+- **.nfs\* files preventing source folder removal** — executor now detects NFS open-file placeholders after a cross-filesystem move, logs at INFO, and surfaces a human-readable message instead of a spurious warning.
+- **Sources/Destinations separator full height** — vertical divider now stretches to match the full height of the row instead of a fixed 1.5 em.
+- **Mobile sources/destinations natural sizing** — sources and destinations sections size to content instead of splitting 50/50.
+- **Mobile free-space labels restored** — free-space sub-labels on source/destination filter buttons were incorrectly hidden on mobile; now shown again.
+- **Rename applies to wrap folder** — when Rename is active and Place in subfolder is checked, the action preview and the created folder both use the renamed filename as the folder stem, not the original.
+- **Mixed type block ignores Delete/Extract** — switching the action to Delete or Extract now immediately clears any stale mixed-type warning and re-enables the queue/run buttons; the block only applies to Move and Copy.
+- **Warning tooltip off-screen on mobile** — the ⚠ tooltip in the action bar now uses `position: fixed` on mobile, spans the screen width with 10 px margins, and is positioned dynamically above the action bar. On mobile it requires a tap to open (hover is suppressed); tapping anywhere else closes it.
+
+---
+
 ## [1.0.1] - 2026-03-19 — Auth env var rename
 
 ### Changed

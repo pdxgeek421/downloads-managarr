@@ -149,7 +149,8 @@ async def execute_queue(body: Optional[ExecuteRequest] = None):
 
         config = get_config()
         days = config.get("history_days", 30)
-        trash = config.get("trash_folder")
+        trash_mode = config.get("trash_mode", "auto")
+        trash = "__auto__" if trash_mode == "auto" else config.get("trash_folder")
         extract_temp = config.get("extract_temp_folder")
 
         resolution_map: dict[str, str] = {}
@@ -214,7 +215,8 @@ async def execute_next(body: Optional[ExecuteRequest] = None):
         action_id = action.get("id", "")
         config = get_config()
         days = config.get("history_days", 30)
-        trash = config.get("trash_folder")
+        trash_mode = config.get("trash_mode", "auto")
+        trash = "__auto__" if trash_mode == "auto" else config.get("trash_folder")
         extract_temp = config.get("extract_temp_folder")
 
         err = _validate_action_paths(action, config)
@@ -270,7 +272,8 @@ async def execute_direct(body: dict = Body(...)):
     async with _execute_lock:
         config = get_config()
         days = config.get("history_days", 30)
-        trash = config.get("trash_folder")
+        trash_mode = config.get("trash_mode", "auto")
+        trash = "__auto__" if trash_mode == "auto" else config.get("trash_folder")
         extract_temp = config.get("extract_temp_folder")
         actions = body.get("actions", [])
         results = []
@@ -364,9 +367,15 @@ async def revert_history_item(body: dict = Body(...)):
 
         if action_type == "restore":
             config = get_config()
-            trash = config.get("trash_folder")
-            if not trash:
-                return {"status": "error", "message": "No trash folder configured"}
+            trash_mode = config.get("trash_mode") or "auto"
+            if trash_mode == "auto":
+                # Re-trash next to the item's current location
+                trash = os.path.join(os.path.dirname(dest_path), ".Trash")
+            else:
+                trash = config.get("trash_folder")
+                if not trash:
+                    return {"status": "error", "message": "No trash folder configured"}
+            os.makedirs(trash, exist_ok=True)
             name = os.path.basename(dest_path)
             trash_dest = os.path.join(trash, name)
             if os.path.exists(trash_dest):

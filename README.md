@@ -15,7 +15,8 @@ There's no good middle ground. Until you just... build one.
 ### File Browser
 - Unified view across multiple **source folders** (e.g. `/data/completed`, `/data/usenet/completed`, `/data/torrents/completed`)
 - Sort by name, source, type, size, or modified date
-- Filter by All / Files / Folders, or by media type (TV, Movie, Music, etc.)
+- Filter by All / Files / Folders, by media type (TV, Movie, Music, etc.), or by individual source
+- **Toggle unrecognized files** (❓) — shows or hides files whose type couldn't be detected; on by default, also configurable in Settings → Appearance
 - Multi-select with checkboxes or select-all
 - Folder size calculation (cached)
 - Breadcrumb navigation into subfolders
@@ -55,7 +56,8 @@ There's no good middle ground. Until you just... build one.
 - Applies per-item so you can handle each collision differently in a single queue run
 
 ### Delete & Trash
-- **Move to Trash** — soft-delete to a configured trash folder (reversible)
+- **Three trash modes** — Off (disabled), Auto (creates `.Trash` beside the source file automatically — default), or Custom (explicit path)
+- **Move to Trash** — soft-delete to the configured/auto trash location (reversible)
 - **Permanent Delete** — confirmation-gated, no takebacks
 - Dedicated **Trash panel** — browse, restore (with auto-rename on collision), or permanently delete individual items
 - **Empty Trash** to clear everything at once
@@ -92,12 +94,14 @@ There's no good middle ground. Until you just... build one.
 - **Panel width:** drag the resize handle on the queue sidebar; size is remembered
 
 ### File-List Toolbar
-- Two-row layout: **type filters** (All / Files / Folders, content-type buttons) on the top row; **text filter**, item count, and refresh on the bottom row
+- **Top row** — Sources & Destinations filter buttons (collapsible) with free-space labels per destination
+- **Bottom row** — All / Files / Folders filter buttons, text filter input, ❓ toggle for unrecognized files, item count, and refresh
 
 ### Mobile / Responsive
 - At ≤768px the queue panel becomes a slide-in overlay toggled by a ☰ button in the header; shows live queue count
 - Modals become bottom sheets; settings nav collapses to a horizontal scrollable tab bar
 - Table columns reduce on smaller screens (Source/Modified hidden at 768px; Type/Size hidden at 480px)
+- Action bar warning tooltip is tap-to-show on mobile and uses `position: fixed` so it never goes off-screen
 
 ---
 

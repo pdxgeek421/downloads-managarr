@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Downloads Managarr</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%238b5cf6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='20' font-family='system-ui,sans-serif' fill='white'%3E%E2%AC%87%3C/text%3E%3C/svg%3E">
   <style>
     :root {
       --bg:        #0f0f17;
@@ -90,7 +91,7 @@
     .dest-free { font-size: var(--fz-xs); color: var(--accent); white-space: nowrap; }
 
     /* ── Buttons ── */
-    .btn { padding: 0.38em calc(1.08em - 2px); border: none; border-radius: var(--radius); cursor: pointer; font-size: var(--fz-ui); font-weight: 500; line-height: 1.4; transition: opacity .15s, background .15s; white-space: nowrap; }
+    .btn { padding: 0.38em calc(1.08em - 6px); border: none; border-radius: var(--radius); cursor: pointer; font-size: var(--fz-ui); font-weight: 500; line-height: 1.4; transition: opacity .15s, background .15s; white-space: nowrap; }
     .btn:hover { opacity: .85; }
     .btn:disabled { opacity: .4; cursor: not-allowed; }
     .btn-primary   { background: var(--accent);  color: #fff; }
@@ -118,14 +119,26 @@
       display: flex; align-items: center; gap: 8px;
       padding: 0.46em 14px; flex-wrap: wrap;
     }
-    .toolbar-row-types { border-bottom: 1px solid var(--border); }
+    .toolbar-row-types { border-bottom: 1px solid var(--border); align-items: flex-start; flex-wrap: nowrap; }
+    .toolbar-row-types .filter-sep { height: auto; align-self: stretch; margin: 0; }
+    .toolbar-filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .toolbar-section-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim); white-space: nowrap; }
+    .toolbar-filter-group .type-filter-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    .toolbar-toggle-bar {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 3px 14px; cursor: pointer; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim);
+      border-bottom: 1px solid var(--border); user-select: none;
+      transition: color .15s, background .15s;
+    }
+    .toolbar-toggle-bar:hover { color: var(--text); background: var(--surface2); }
     .filter-input {
       padding: 0.38em 0.77em; background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius); font-size: var(--fz-ui); outline: none; width: 180px;
+      color: var(--text); border-radius: var(--radius); font-size: var(--fz-ui); outline: none; width: 315px;
     }
     .filter-input:focus { border-color: var(--accent); }
     .toolbar-count { color: var(--text-dim); font-size: var(--fz-ui); }
-    .type-filter-btn { padding: 0.38em calc(1em - 2px); border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim); border-radius: var(--radius); cursor: pointer; font-size: var(--fz-ui); transition: all .15s; font-family: inherit; line-height: 1.4; display: inline-flex; flex-direction: column; align-items: center; gap: 1px; }
+    .type-filter-btn { padding: 0.38em calc(1em - 6px); border: 1px solid var(--border); background: var(--surface2); color: var(--text-dim); border-radius: var(--radius); cursor: pointer; font-size: var(--fz-ui); transition: all .15s; font-family: inherit; line-height: 1.4; display: inline-flex; flex-direction: column; align-items: center; gap: 1px; }
     .type-filter-btn:hover { color: var(--text); border-color: var(--accent); }
     .type-filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     .btn-free-info { font-size: 10px; opacity: 0.7; line-height: 1; font-weight: 400; }
@@ -138,7 +151,7 @@
     table { width: 100%; border-collapse: collapse; }
     thead th {
       position: sticky; top: 0;
-      background: var(--surface2); padding: 0.57em 12px;
+      background: var(--surface2); padding: 0.57em 6px;
       text-align: left; font-size: var(--fz-sm); font-weight: 600;
       text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim);
       border-bottom: 1px solid var(--border); white-space: nowrap;
@@ -149,6 +162,8 @@
     thead th.sort-active { color: var(--accent); }
     thead th:first-child { width: 36px; text-align: center; }
     thead th:nth-child(2) { width: 32px; }
+    thead th.col-right { text-align: right; }
+    td.col-right { text-align: right; }
     .media-type-sel { font-size: 11px; padding: 1px 3px; border-radius: 4px; border: 1px solid transparent; background: transparent; cursor: pointer; font-family: inherit; outline: none; max-width: 90px; }
     .media-type-sel:hover, .media-type-sel:focus { border-color: var(--border); background: var(--surface); }
     .media-type-sel.mt-tv { color: #60a5fa; }
@@ -168,7 +183,7 @@
     tbody tr.selected { background: #2a1a4e; }
     tbody tr.unknown-type { opacity: .45; }
     .media-type-sel.mt-unknown { color: var(--text-dim); font-style: italic; }
-    td { padding: 0.5em 12px; vertical-align: middle; }
+    td { padding: 0.5em 6px; vertical-align: middle; }
     td:first-child { text-align: center; width: 36px; }
     td:nth-child(2) { font-size: 18px; line-height: 1; width: 32px; padding-right: 0; }
     .file-name-text { font-weight: 500; word-break: break-word; }
@@ -222,6 +237,16 @@
     .ab-info-alert .alert-tooltip::after { content: ''; position: absolute; top: 100%; right: 14px; left: auto; transform: none; border: 6px solid transparent; border-top-color: rgba(245,158,11,.5); }
 
     .ab-info-alert:hover .alert-tooltip { display: block; }
+    /* Mobile: click-to-show, fixed positioning so it can't go off-screen */
+    @media (max-width: 480px) {
+      .ab-info-alert { cursor: pointer; user-select: none; }
+      .ab-info-alert:hover .alert-tooltip { display: none; }
+      .ab-info-alert.tip-open .alert-tooltip {
+        display: block; position: fixed; left: 10px; right: 10px;
+        width: auto; transform: none; border-radius: var(--radius); z-index: 500;
+      }
+      .ab-info-alert.tip-open .alert-tooltip::after { display: none; }
+    }
     .info-tip { position: relative; display: inline-flex; align-items: center; color: var(--text-dim); font-size: var(--fz-ui); cursor: default; line-height: 1; }
     .info-tip .tip-text { display: none; position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 11px; font-size: var(--fz-sm); color: var(--text); white-space: normal; width: 240px; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,.4); line-height: 1.5; z-index: 10; }
     .info-tip .tip-text::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--border); }
@@ -234,7 +259,7 @@
     .header-dropdown.open { display: block; }
     .header-dropdown-item { display: flex; align-items: center; gap: 9px; padding: 0.77em 16px 0.77em 14px; font-size: var(--fz-ui); cursor: pointer; color: var(--text); border: none; background: transparent; width: 100%; text-align: left; font-family: inherit; font-weight: 500; transition: background .12s; white-space: nowrap; }
     .header-dropdown-item:hover { background: rgba(255,255,255,.07); }
-    .hdi-icon { display: inline-block; width: 16px; text-align: center; flex-shrink: 0; }
+    .hdi-icon { display: inline-block; width: 20px; text-align: center; flex-shrink: 0; font-size: 16px; line-height: 1; }
     .header-dropdown-sep { height: 1px; background: var(--border); margin: 3px 0; }
     .wrap-opt { display: flex; align-items: center; gap: 5px; cursor: pointer; }
     .delete-opts { display: flex; align-items: center; gap: 16px; }
@@ -321,8 +346,9 @@
     .theme-swatch.active { border-color: var(--accent); background: rgba(139,92,246,.12); color: var(--text); }
     .theme-swatch.disabled { opacity: .4; cursor: default; }
     .source-item { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 10px; margin-bottom: 6px; }
-    .source-item input[type="text"] { flex: 1; }
-    .source-item .label-input { width: 100px; flex: none; }
+    .source-item input[type="text"] { flex: 1; min-width: 0; }
+    .source-item input[type="text"].label-input { width: 90px; flex: 0 0 90px; }
+    .source-item .path-input-wrap { flex: 1; min-width: 0; }
     .source-item.env-managed { border-color: var(--accent); opacity: .85; }
     .env-badge { font-size: 10px; font-family: monospace; font-weight: 700; color: var(--accent); background: rgba(139,92,246,.12); border: 1px solid var(--accent); border-radius: 3px; padding: 1px 5px; white-space: nowrap; flex-shrink: 0; }
     .env-trash-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
@@ -352,6 +378,13 @@
     .trash-input-wrap { display: flex; align-items: center; gap: 6px; }
     .trash-input-wrap input { flex: 1; }
     .field-note { font-size: var(--fz-sm); color: var(--text-dim); margin-bottom: 8px; }
+    /* Color picker + hex-input pairs used throughout Appearance */
+    .cp-row   { display: flex; gap: 6px; align-items: center; }
+    .cp-picker    { width: 32px; height: 26px; padding: 1px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); cursor: pointer; }
+    .cp-picker-lg { width: 36px; height: 28px; padding: 2px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); cursor: pointer; }
+    .cp-hex    { width: 62px; padding: 3px 6px; font-size: 11px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: monospace; }
+    .cp-hex-lg { width: 62px; padding: 4px 6px; font-size: 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: monospace; }
+    .cp-label  { font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 4px; }
 
     /* Folder Browser */
     .browser-path { font-size: var(--fz-sm); color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.54em 10px; font-family: monospace; word-break: break-all; margin-bottom: 10px; }
@@ -430,7 +463,7 @@
     .history-item-label.trash   { background: #431407; color: #fb923c; }
     .history-item-label.permanent { background: #450a0a; color: var(--danger); }
     .history-trash-lock { font-size: var(--fz-sm); line-height: 1; flex-shrink: 0; }
-    .trash-count-badge { display: inline-flex; align-items: center; justify-content: center; background: #fb923c; color: #1a0800; font-size: 10px; font-weight: 700; border-radius: 8px; padding: 0 5px; min-width: 16px; height: 16px; margin-left: 3px; vertical-align: middle; }
+    .count-bubble { position: absolute; top: -6px; right: -8px; z-index: 10; display: inline-flex; align-items: center; justify-content: center; background: var(--badge-bg, var(--accent)); color: var(--badge-text, #fff); font-size: var(--badge-fz, 10px); font-weight: 700; border-radius: 8px; padding: 0 4px; min-width: var(--badge-h, 16px); height: var(--badge-h, 16px); pointer-events: none; line-height: 1; border: 1.5px solid var(--bg); }
     /* Version tag */
     .logo-text { display: flex; align-items: flex-end; gap: 6px; height: 28px; }
     .version-tag { font-size: 10px; font-family: monospace; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; cursor: pointer; letter-spacing: .02em; transition: color .15s, border-color .15s; margin-bottom: 2px; }
@@ -556,10 +589,26 @@
       /* Toolbar */
       .toolbar-row { padding: 0.38em 10px; gap: 6px; }
       .toolbar-count { display: none; }
+      /* Keep filter groups side-by-side, natural sizing */
+      .toolbar-row-types .toolbar-filter-group { flex: 0 1 auto; min-width: 0; }
+
+      /* Storage color meter: 2 columns on mobile */
+      #storage-color-meter-section .meter-grid { grid-template-columns: 1fr 1fr !important; }
 
       /* Action bar */
       .ab-row .label { font-size: var(--fz-sm); }
       #action-bar { padding: 0.46em 10px 0.62em; }
+      .ab-bottom { flex-wrap: wrap; align-items: center; }
+      .ab-preview { width: 100%; white-space: normal; overflow: visible; text-overflow: clip; margin-bottom: 4px; }
+
+      /* Source/Dest items: single row on mobile */
+      .source-item { flex-wrap: nowrap; }
+      /* Tighten label on mobile so path field has room */
+      .source-item input[type="text"].label-input { width: 70px; flex: 0 0 70px; }
+      /* Hide per-row free-space on mobile — already shown on filter buttons */
+      .source-item .dest-path-free { display: none; }
+      /* Compact browse button on mobile */
+      .source-item .btn-secondary.btn-sm { padding: 0.25em 0.38em; }
 
       /* Modals full height */
       .modal { max-height: 96dvh; border-radius: 10px 10px 0 0; }
@@ -598,11 +647,11 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.0.1</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.2.0</span>
     </div>
   </div>
   <div class="spacer"></div>
-  <button class="btn btn-secondary" id="trash-btn" onclick="openTrash()" style="display:none">🗑 Trash<span id="trash-count-badge" class="trash-count-badge" style="display:none"></span></button>
+  <button class="btn btn-secondary btn-icon" id="trash-btn" onclick="openTrash()" style="display:none;position:relative;font-size:16px">🗑<span id="trash-count-badge" class="count-bubble" style="display:none"></span></button>
   <div class="header-menu" id="header-menu">
     <button class="btn btn-ghost btn-icon" onclick="toggleHeaderMenu()" id="header-menu-btn" title="Menu" style="font-size:16px">···</button>
     <div class="header-dropdown" id="header-dropdown">
@@ -612,7 +661,7 @@
       <button class="header-dropdown-item" id="logout-btn" onclick="logout()" style="display:none"><span class="hdi-icon">⏏</span>Logout</button>
     </div>
   </div>
-  <button class="btn btn-ghost btn-icon" id="mobile-queue-btn" onclick="toggleMobileQueue()" title="Queue" style="display:none;font-size:16px">☰</button>
+  <button class="btn btn-ghost btn-icon" id="mobile-queue-btn" onclick="toggleMobileQueue()" title="Queue" style="display:none;position:relative;font-size:16px">☰<span class="count-bubble" id="mobile-queue-badge" style="display:none"></span></button>
 </header>
 
 <!-- Mobile queue backdrop -->
@@ -626,20 +675,32 @@
 
     <!-- Toolbar -->
     <div class="file-toolbar">
-      <!-- Row 1: Type filter buttons -->
-      <div class="toolbar-row toolbar-row-types">
+      <!-- Toggle bar: click to show/hide the sources/destinations row -->
+      <div class="toolbar-toggle-bar" id="toolbar-toggle-bar" onclick="toggleFilterBar()">
+        <span id="toolbar-toggle-label">▼ Sources &amp; Destinations</span>
+      </div>
+      <!-- Row 1: Source + Destination filter buttons -->
+      <div class="toolbar-row toolbar-row-types" id="toolbar-row-types">
+        <div class="toolbar-filter-group" id="types-filter-sources">
+          <span class="toolbar-section-label">Sources</span>
+          <div class="type-filter-btns"><span id="source-filter-btns" style="display:contents"></span></div>
+        </div>
+        <span class="filter-sep types-filter-sep" style="align-self:stretch"></span>
+        <div class="toolbar-filter-group" id="types-filter-dests">
+          <span class="toolbar-section-label">Destinations</span>
+          <div class="type-filter-btns"><span id="content-type-filter-btns" style="display:contents"></span></div>
+        </div>
+      </div>
+      <!-- Row 2: All|Files|Folders · Filter input · count · refresh -->
+      <div class="toolbar-row toolbar-row-controls">
         <button class="type-filter-btn active" id="tfb-all"    onclick="setAllFilter()">All</button>
         <button class="type-filter-btn"        id="tfb-file"   onclick="setFileTypeFilter('file')">Files</button>
         <button class="type-filter-btn"        id="tfb-folder" onclick="setFileTypeFilter('folder')">Folders</button>
-        <span class="filter-sep"></span>
-        <span id="content-type-filter-btns" style="display:contents"></span>
-      </div>
-      <!-- Row 2: Filter input · count · refresh -->
-      <div class="toolbar-row toolbar-row-controls">
+        <button class="type-filter-btn"        id="tfb-hide-unknown" onclick="toggleHideUnknown()" title="Toggle unrecognized files">❓</button>
         <input class="filter-input" id="filter-input" type="search" placeholder="🔍 Filter…" oninput="applyFilter()">
         <div style="flex:1"></div>
         <span class="toolbar-count" id="file-count">Loading…</span>
-        <button class="btn btn-ghost btn-icon" onclick="refreshFiles()" title="Refresh" style="font-size:1.4em">↻</button>
+        <button class="btn btn-ghost btn-icon" onclick="refreshFiles()" title="Refresh" style="width:32px;height:32px;padding:0;flex-shrink:0"><span style="font-size:1.75em;line-height:1;font-weight:300">↻</span></button>
       </div>
     </div>
 
@@ -656,14 +717,14 @@
             <th class="sortable" onclick="sortBy('name')">
               Name <span id="sort-name">↕</span>
             </th>
-            <th class="sortable" onclick="sortBy('source_label')">
+            <th class="sortable col-right" onclick="sortBy('source_label')">
               Source <span id="sort-source_label">↕</span>
             </th>
-            <th class="sortable" onclick="sortBy('type')" style="width:96px">Type <span id="sort-type">↕</span></th>
-            <th class="sortable" onclick="sortBy('size')">
+            <th class="sortable col-right" onclick="sortBy('type')" style="width:96px">Type <span id="sort-type">↕</span></th>
+            <th class="sortable col-right" onclick="sortBy('size')">
               Size <span id="sort-size">↕</span>
             </th>
-            <th class="sortable" onclick="sortBy('modified')">
+            <th class="sortable col-right" onclick="sortBy('modified')">
               Modified <span id="sort-modified">↕</span>
             </th>
           </tr>
@@ -800,7 +861,7 @@
       <div class="ab-row ab-bottom">
         <span class="ab-preview" id="ab-action-preview"></span>
         <div style="flex:1"></div>
-        <div class="ab-info-alert" id="ab-root-dest-warn" style="display:none"><span class="alert-icon">⚠</span><span class="alert-tooltip" id="ab-root-dest-warn-text"></span></div>
+        <div class="ab-info-alert" id="ab-root-dest-warn" style="display:none" onclick="toggleAlertTip(this,event)"><span class="alert-icon">⚠</span><span class="alert-tooltip" id="ab-root-dest-warn-text"></span></div>
         <button class="btn btn-primary" onclick="addToQueue()">+ Add to Queue</button>
         <button class="btn btn-run" onclick="runNow()">▶ Run Now</button>
         <button class="btn btn-ghost btn-sm" onclick="clearSelection()">✕ Clear</button>
@@ -817,7 +878,7 @@
         <button class="queue-tab active" id="qtab-queue"   onclick="switchQueueTab('queue')">Queue <span class="queue-badge" id="queue-badge"></span></button>
         <button class="queue-tab"        id="qtab-history" onclick="switchQueueTab('history')">History</button>
       </div>
-      <button class="btn btn-ghost btn-sm" id="qpanel-clear-btn" onclick="clearQueue()">🗑 Clear</button>
+      <button class="btn btn-ghost btn-sm" id="qpanel-clear-btn" onclick="clearQueue()">Clear Queue</button>
     </div>
 
     <!-- Queue view -->
@@ -836,7 +897,7 @@
       </div>
       <div class="queue-list" id="history-list"></div>
       <div class="queue-footer">
-        <button class="btn btn-ghost btn-sm" onclick="clearHistory()">🗑 Clear History</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearHistory()">Clear History</button>
       </div>
     </div>
   </aside>
@@ -870,17 +931,13 @@
         </div>
         <div class="settings-section">
           <h3>Media Types</h3>
-          <p class="field-note">Define your media categories. Each type gets its own destination folder section below.</p>
-          <div id="type-tags-row" class="type-mgmt-row"></div>
+          <p class="field-note">Define your media categories. Each type gets its own destination folder section below. Use the × on each section header to remove a type.</p>
           <div style="display:flex;gap:6px;align-items:center;margin-top:8px">
             <input type="text" id="new-type-icon" class="new-type-icon" placeholder="🏷️" title="Icon (emoji)" onkeydown="if(event.key==='Enter')addMediaTypeSetting()">
             <input type="text" id="new-type-input" placeholder="e.g. Anime, Books…" style="width:140px" onkeydown="if(event.key==='Enter')addMediaTypeSetting()">
             <button class="btn btn-secondary btn-sm" onclick="addMediaTypeSetting()">+ Add</button>
+            <span class="info-tip">ⓘ<span class="tip-text">Suggestions: 🎵 Music, 🎮 Games, 📚 Books, 🎙 Podcasts, 📖 Comics, 🎌 Anime, 🎓 Courses</span></span>
           </div>
-          <p class="field-note" style="margin-top:8px;display:flex;align-items:center;gap:6px">
-            <span class="info-tip tip-left">ⓘ<span class="tip-text">Suggestions: 🎵 Music, 🎮 Games, 📚 Books, 🎙 Podcasts, 📖 Comics, 🎌 Anime, 🎓 Courses</span></span>
-            Common types to consider adding
-          </p>
         </div>
         <div id="dest-sections-container"></div>
       </div>
@@ -888,16 +945,13 @@
       <!-- Behavior -->
       <div class="settings-pane" id="settings-tab-behavior">
         <div class="settings-section">
-          <h3>File Defaults</h3>
+          <h3>Queue Defaults</h3>
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;">
             <input type="checkbox" id="cfg-auto-wrap">
             Place non-TV files in subfolder
           </label>
           <p class="field-note">When selected files don't look like TV episodes, "Place in subfolder" will be pre-checked.</p>
-        </div>
-        <div class="settings-section">
-          <h3>Folder Defaults</h3>
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; margin-top:10px;">
             <input type="checkbox" id="cfg-auto-unwrap">
             Move contents only for TV episode folders
           </label>
@@ -924,23 +978,53 @@
           </label>
           <p class="field-note">Disables "Add to Queue" and "Run Now" when different media types are selected together, or when files from multiple different shows or series are mixed. Use the warning ⚠ indicator to diagnose.</p>
         </div>
+        <div class="settings-section">
+          <h3>Confirmation Dialogs</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="checkbox" id="pref-confirm-clear-queue" onchange="savePrefs({skip_clear_queue_confirm: !this.checked})">
+              Ask before clearing the queue
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="checkbox" id="pref-confirm-clear-history" onchange="savePrefs({skip_clear_history_confirm: !this.checked})">
+              Ask before clearing history
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="checkbox" id="pref-confirm-remove" onchange="savePrefs({skip_remove_confirm: !this.checked})">
+              Ask before removing sources, destinations, or media types
+            </label>
+          </div>
+        </div>
       </div>
 
       <!-- Housekeeping -->
       <div class="settings-pane" id="settings-tab-housekeeping">
         <div class="settings-section">
           <h3>Trash Folder</h3>
-          <p class="field-note">Items deleted with "Move to Trash" go here. Leave empty to disable.</p>
-          <div id="trash-input-container">
-            <div class="trash-input-wrap" id="trash-input-editable">
-              <input type="text" id="trash-path" placeholder="/mnt/trash">
-              <button class="btn btn-secondary btn-sm" onclick="openBrowser('trash-path')">Browse</button>
-              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('trash-path').value=''">Clear</button>
-            </div>
-            <div class="env-trash-row" id="trash-input-env" style="display:none">
-              <span class="env-badge">ENV</span>
-              <input type="text" id="trash-path-env" readonly style="flex:1;opacity:.7;cursor:default">
-              <span style="font-size:12px;color:var(--text-dim)">Set via <code>TRASH_FOLDER</code></span>
+          <p class="field-note">Where "Move to Trash" sends deleted files.</p>
+          <div style="display:flex;gap:14px;margin-top:8px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="radio" name="trash-mode" value="disabled" onchange="onTrashMode('disabled')"> Off
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="radio" name="trash-mode" value="auto" onchange="onTrashMode('auto')"> Auto <span class="field-note" style="margin:0">(creates .Trash in source folder)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+              <input type="radio" name="trash-mode" value="custom" onchange="onTrashMode('custom')"> Custom location
+            </label>
+          </div>
+          <div id="trash-custom-section" style="display:none;margin-top:10px">
+            <div id="trash-input-container">
+              <div class="trash-input-wrap" id="trash-input-editable">
+                <input type="text" id="trash-path" placeholder="/mnt/trash">
+                <button class="btn btn-secondary btn-sm" onclick="openBrowser('trash-path')">Browse</button>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('trash-path').value=''">Clear</button>
+              </div>
+              <div class="env-trash-row" id="trash-input-env" style="display:none">
+                <span class="env-badge">ENV</span>
+                <input type="text" id="trash-path-env" readonly style="flex:1;opacity:.7;cursor:default">
+                <span style="font-size:12px;color:var(--text-dim)">Set via <code>TRASH_FOLDER</code></span>
+              </div>
             </div>
           </div>
         </div>
@@ -951,6 +1035,10 @@
             <input type="text" id="extract-temp-path" placeholder="/mnt/extract_tmp">
             <button class="btn btn-secondary btn-sm" onclick="openBrowser('extract-temp-path')">Browse</button>
             <button class="btn btn-ghost btn-sm" onclick="document.getElementById('extract-temp-path').value=''">Clear</button>
+          </div>
+          <div class="help-callout" style="margin-top:10px">
+            💡 <strong>Tip:</strong> On Linux systems with spare RAM, <code>/dev/shm</code> (shared memory) is an excellent temp folder — extractions happen entirely in RAM, eliminating disk read/write overhead.
+            <a href="#" style="color:var(--accent);text-decoration:none;margin-left:6px" onclick="document.getElementById('extract-temp-path').value='/dev/shm';return false">Use /dev/shm →</a>
           </div>
         </div>
         <div class="settings-section">
@@ -981,24 +1069,24 @@
             <p class="field-note" style="margin-bottom:10px">Customize your theme colors:</p>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
               <div>
-                <label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px">Background</label>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <input type="color" id="custom-bg-picker"   value="#0f0f17" style="width:32px;height:26px;padding:1px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer" oninput="onCustomThemeColor('bg',this.value)">
-                  <input type="text"  id="custom-bg-hex"      value="#0f0f17" maxlength="7" style="flex:1;padding:3px 6px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:monospace" oninput="onCustomThemeHex('bg',this.value)">
+                <label class="cp-label">Background</label>
+                <div class="cp-row">
+                  <input type="color" id="custom-bg-picker"   value="#0f0f17" class="cp-picker" oninput="onCustomThemeColor('bg',this.value)">
+                  <input type="text"  id="custom-bg-hex"      value="#0f0f17" maxlength="7" class="cp-hex" oninput="onCustomThemeHex('bg',this.value)">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px">Surface</label>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <input type="color" id="custom-surface-picker" value="#1a1a2e" style="width:32px;height:26px;padding:1px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer" oninput="onCustomThemeColor('surface',this.value)">
-                  <input type="text"  id="custom-surface-hex"    value="#1a1a2e" maxlength="7" style="flex:1;padding:3px 6px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:monospace" oninput="onCustomThemeHex('surface',this.value)">
+                <label class="cp-label">Surface</label>
+                <div class="cp-row">
+                  <input type="color" id="custom-surface-picker" value="#1a1a2e" class="cp-picker" oninput="onCustomThemeColor('surface',this.value)">
+                  <input type="text"  id="custom-surface-hex"    value="#1a1a2e" maxlength="7" class="cp-hex" oninput="onCustomThemeHex('surface',this.value)">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-dim);display:block;margin-bottom:4px">Text</label>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <input type="color" id="custom-text-picker" value="#e8e8f0" style="width:32px;height:26px;padding:1px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer" oninput="onCustomThemeColor('text',this.value)">
-                  <input type="text"  id="custom-text-hex"    value="#e8e8f0" maxlength="7" style="flex:1;padding:3px 6px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:monospace" oninput="onCustomThemeHex('text',this.value)">
+                <label class="cp-label">Text</label>
+                <div class="cp-row">
+                  <input type="color" id="custom-text-picker" value="#e8e8f0" class="cp-picker" oninput="onCustomThemeColor('text',this.value)">
+                  <input type="text"  id="custom-text-hex"    value="#e8e8f0" maxlength="7" class="cp-hex" oninput="onCustomThemeHex('text',this.value)">
                 </div>
               </div>
             </div>
@@ -1018,10 +1106,10 @@
             <div class="theme-swatch" id="accent-swatch-amber"  onclick="setAccent('amber','#f59e0b','#d97706')"  style="gap:8px"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#f59e0b"></span> Amber</div>
             <div class="theme-swatch" id="accent-swatch-custom" onclick="setAccent('custom',document.getElementById('accent-custom-hex').value||'#8b5cf6')" style="gap:8px"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#8b5cf6" id="accent-custom-preview"></span> Custom</div>
           </div>
-          <div id="accent-custom-section" style="margin-top:12px;display:none;align-items:center;gap:8px">
-            <label style="font-size:12px;color:var(--text-dim)">Custom color:</label>
-            <input type="color" id="accent-custom-picker" value="#8b5cf6" style="width:36px;height:28px;padding:2px;border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer" oninput="onCustomAccentColor(this.value)">
-            <input type="text"  id="accent-custom-hex"    value="#8b5cf6" maxlength="7" placeholder="#rrggbb" style="width:80px;padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:monospace" oninput="onCustomAccentHex(this.value)">
+          <div id="accent-custom-section" class="cp-row" style="margin-top:12px;display:none">
+            <label class="cp-label" style="margin-bottom:0">Custom color:</label>
+            <input type="color" id="accent-custom-picker" value="#8b5cf6" class="cp-picker-lg" oninput="onCustomAccentColor(this.value)">
+            <input type="text"  id="accent-custom-hex"    value="#8b5cf6" maxlength="7" placeholder="#rrggbb" class="cp-hex-lg" style="width:80px" oninput="onCustomAccentHex(this.value)">
             <button class="btn btn-sm" onclick="setAccent('custom',document.getElementById('accent-custom-hex').value)">Apply</button>
           </div>
         </div>
@@ -1032,6 +1120,11 @@
             <span>Folders above files</span>
           </label>
           <p class="field-note" style="margin-top:4px">Folders always appear before files regardless of sort direction.</p>
+          <label class="settings-check" style="margin-top:8px">
+            <input type="checkbox" id="pref-hide-unknown" onchange="savePrefs({show_unknown: this.checked}); st.filterShowUnknown = this.checked; _updateFilterButtons(); renderFiles();">
+            <span>Show unrecognized files (❓ Unknown)</span>
+          </label>
+          <p class="field-note" style="margin-top:4px">Show files whose type couldn't be detected. Toggle with the ❓ button in the filter bar.</p>
         </div>
         <div class="settings-section" style="margin-top:24px">
           <h3>Text Size</h3>
@@ -1050,22 +1143,111 @@
           <h3>Destination Free Space</h3>
           <p class="field-note">Show available disk space on content-type filter buttons in the toolbar.</p>
           <label class="settings-check" style="margin-top:10px">
-            <input type="checkbox" id="pref-dest-free-show" onchange="savePrefs({dest_free_show:this.checked});renderContentTypeFilterButtons()">
+            <input type="checkbox" id="pref-dest-free-show" onchange="savePrefs({dest_free_show:this.checked});renderSourceFilterButtons();renderContentTypeFilterButtons()">
             <span>Show free space on type filter buttons</span>
           </label>
           <div id="dest-free-format-section" style="margin-top:12px">
             <p class="field-note">Display format:</p>
             <div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap">
               <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
-                <input type="radio" name="dest-free-format" value="free" onchange="savePrefs({dest_free_format:'free'});renderContentTypeFilterButtons()"> Space free
+                <input type="radio" name="dest-free-format" value="free" onchange="savePrefs({dest_free_format:'free'});renderSourceFilterButtons();renderContentTypeFilterButtons()"> Space free
               </label>
               <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
-                <input type="radio" name="dest-free-format" value="pct" onchange="savePrefs({dest_free_format:'pct'});renderContentTypeFilterButtons()"> % full
+                <input type="radio" name="dest-free-format" value="pct" onchange="savePrefs({dest_free_format:'pct'});renderSourceFilterButtons();renderContentTypeFilterButtons()"> % full
               </label>
               <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
-                <input type="radio" name="dest-free-format" value="both" onchange="savePrefs({dest_free_format:'both'});renderContentTypeFilterButtons()"> Both
+                <input type="radio" name="dest-free-format" value="both" onchange="savePrefs({dest_free_format:'both'});renderSourceFilterButtons();renderContentTypeFilterButtons()"> Both
               </label>
             </div>
+          </div>
+        </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <p class="field-note" style="margin-bottom:8px">Availability color:</p>
+            <div style="display:flex;gap:16px;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+                <input type="radio" name="storage-color-mode" value="meter" onchange="onStorageColorMode('meter')"> Color meter (by % free)
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+                <input type="radio" name="storage-color-mode" value="static" onchange="onStorageColorMode('static')"> Static color
+              </label>
+            </div>
+            <!-- Static color picker -->
+            <div id="storage-color-static-section" style="display:none;margin-top:10px">
+              <div style="display:flex;gap:14px;margin-bottom:8px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+                  <input type="radio" name="storage-static-type" value="accent" onchange="onStorageStaticType('accent')"> Accent color
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)">
+                  <input type="radio" name="storage-static-type" value="custom" onchange="onStorageStaticType('custom')"> Custom
+                </label>
+              </div>
+              <div id="storage-static-custom-row" class="cp-row">
+                <label class="cp-label" style="margin-bottom:0">Color:</label>
+                <input type="color" id="storage-color-static-picker" value="#8b5cf6" class="cp-picker-lg" oninput="onStorageStaticColor(this.value)">
+                <input type="text"  id="storage-color-static-hex"    value="#8b5cf6" maxlength="7" class="cp-hex-lg" oninput="onStorageStaticHex(this.value)">
+              </div>
+            </div>
+            <!-- Meter thresholds -->
+            <div id="storage-color-meter-section" style="margin-top:10px">
+              <p class="field-note">Set colors for each threshold (based on % free space remaining):</p>
+              <div class="meter-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:8px">
+                <div>
+                  <label class="cp-label">⚠ Warning (&lt;10%)</label>
+                  <div class="cp-row" style="gap:4px">
+                    <input type="color" id="sc-warning-picker" value="#ef4444" class="cp-picker" oninput="onStorageMeterColor('warning',this.value)">
+                    <input type="text"  id="sc-warning-hex"    value="#ef4444" maxlength="7" class="cp-hex" oninput="onStorageMeterHex('warning',this.value)">
+                  </div>
+                </div>
+                <div>
+                  <label class="cp-label">Low (10–20%)</label>
+                  <div class="cp-row" style="gap:4px">
+                    <input type="color" id="sc-low-picker" value="#f97316" class="cp-picker" oninput="onStorageMeterColor('low',this.value)">
+                    <input type="text"  id="sc-low-hex"    value="#f97316" maxlength="7" class="cp-hex" oninput="onStorageMeterHex('low',this.value)">
+                  </div>
+                </div>
+                <div>
+                  <label class="cp-label">Medium (20–50%)</label>
+                  <div class="cp-row" style="gap:4px">
+                    <input type="color" id="sc-medium-picker" value="#eab308" class="cp-picker" oninput="onStorageMeterColor('medium',this.value)">
+                    <input type="text"  id="sc-medium-hex"    value="#eab308" maxlength="7" class="cp-hex" oninput="onStorageMeterHex('medium',this.value)">
+                  </div>
+                </div>
+                <div>
+                  <label class="cp-label">Plenty (≥50%)</label>
+                  <div class="cp-row" style="gap:4px">
+                    <input type="color" id="sc-plenty-picker" value="#22c55e" class="cp-picker" oninput="onStorageMeterColor('plenty',this.value)">
+                    <input type="text"  id="sc-plenty-hex"    value="#22c55e" maxlength="7" class="cp-hex" oninput="onStorageMeterHex('plenty',this.value)">
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-ghost" style="margin-top:8px" onclick="resetStorageColors()">Reset to defaults</button>
+            </div>
+          </div>
+        </div>
+        <!-- Notification badge colors -->
+        <div class="settings-section" style="margin-top:24px">
+          <h3>Notification Badges</h3>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px">
+            <label style="font-size:var(--fz-ui);color:var(--text-dim);white-space:nowrap">Background:</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-bg-mode" value="accent" onchange="onBadgeBgMode('accent')"> Accent</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-bg-mode" value="custom" onchange="onBadgeBgMode('custom')"> Custom</label>
+            <div id="badge-bg-custom-row" class="cp-row" style="display:none">
+              <input type="color" id="badge-bg-picker" value="#8b5cf6" class="cp-picker-lg" oninput="onBadgeBgColor(this.value)">
+              <input type="text"  id="badge-bg-hex"    value="#8b5cf6" maxlength="7" class="cp-hex-lg" oninput="onBadgeBgHex(this.value)">
+            </div>
+          </div>
+          <div class="cp-row" style="gap:14px;flex-wrap:wrap;margin-top:10px">
+            <label style="font-size:var(--fz-ui);color:var(--text-dim);white-space:nowrap">Text color:</label>
+            <input type="color" id="badge-text-picker" value="#ffffff" class="cp-picker-lg" oninput="onBadgeTextColor(this.value)">
+            <input type="text"  id="badge-text-hex"    value="#ffffff" maxlength="7" class="cp-hex-lg" oninput="onBadgeTextHex(this.value)">
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
+            <label style="font-size:var(--fz-ui);color:var(--text-dim);white-space:nowrap">Size:</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-size" value="xs" onchange="onBadgeSize('xs')"> XS</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-size" value="sm" onchange="onBadgeSize('sm')"> S</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-size" value="md" onchange="onBadgeSize('md')"> M</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-size" value="lg" onchange="onBadgeSize('lg')"> L</label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:var(--fz-ui)"><input type="radio" name="badge-size" value="xl" onchange="onBadgeSize('xl')"> XL</label>
           </div>
         </div>
       </div>
@@ -1086,6 +1268,10 @@
       <button class="modal-close" onclick="closeModal('trash-overlay')">×</button>
     </div>
     <div class="modal-body">
+      <div id="trash-source-tip" class="help-callout" style="display:none;margin-bottom:12px">
+        💡 <strong>Tip:</strong> Your trash folder isn't in your source list — adding it as a source lets you browse and re-queue items from trash without extra read/write.
+        <a href="#" style="color:var(--accent);margin-left:6px" onclick="closeModal('trash-overlay');openSettings();showSettingsTab('library');return false">Add in Settings →</a>
+      </div>
       <div class="trash-toolbar">
         <div class="trash-restore-row">
           <label>Restore to:</label>
@@ -1204,6 +1390,13 @@
             <div class="help-feature-body">
               <div class="help-feature-title">Media Type Filters</div>
               <p class="help-feature-desc">The TV, Movie, Music, Games buttons (and any custom types you add) filter the list to only that detected type. Generated dynamically from your configured media types in Settings → Library.</p>
+            </div>
+          </div>
+          <div class="help-feature">
+            <div class="help-feature-icon">❓</div>
+            <div class="help-feature-body">
+              <div class="help-feature-title">Toggle Unrecognized Files</div>
+              <p class="help-feature-desc">The ❓ button in the filter bar shows or hides files whose type couldn't be detected. Active (lit) = unrecognized files are visible; inactive = they're hidden. The default is shown. You can also set the default in Settings → Appearance → File List.</p>
             </div>
           </div>
         </div>
@@ -1396,24 +1589,10 @@
         <div class="help-section">
           <h3>Behavior</h3>
           <div class="help-feature">
-            <div class="help-feature-icon">📄</div>
+            <div class="help-feature-icon">📋</div>
             <div class="help-feature-body">
-              <div class="help-feature-title">Place in Subfolder (default)</div>
-              <p class="help-feature-desc">When enabled, the "Place in subfolder" checkbox is pre-checked for non-TV files so they land in their own folder at the destination.</p>
-            </div>
-          </div>
-          <div class="help-feature">
-            <div class="help-feature-icon">📤</div>
-            <div class="help-feature-body">
-              <div class="help-feature-title">Move Contents Only (default)</div>
-              <p class="help-feature-desc">When enabled, the "Move contents only" checkbox is pre-checked for TV episode folders, so the folder wrapper is not copied — only its files.</p>
-            </div>
-          </div>
-          <div class="help-feature">
-            <div class="help-feature-icon">📺</div>
-            <div class="help-feature-body">
-              <div class="help-feature-title">Season Folder (default)</div>
-              <p class="help-feature-desc">When enabled, TV episodes are automatically routed into a <code>Season XX</code> subfolder at the destination.</p>
+              <div class="help-feature-title">Queue Defaults</div>
+              <p class="help-feature-desc">Controls which action-bar checkboxes are pre-checked when you select files. <em>Place in subfolder</em> auto-checks for non-TV files; <em>Move contents only</em> auto-checks for TV episode folders; <em>Delete original folder if empty</em> removes the source folder after a move if nothing is left behind.</p>
             </div>
           </div>
           <div class="help-feature">
@@ -1429,8 +1608,8 @@
           <div class="help-feature">
             <div class="help-feature-icon">🗑</div>
             <div class="help-feature-body">
-              <div class="help-feature-title">Trash Folder</div>
-              <p class="help-feature-desc">Where "Move to Trash" sends deleted files. Required for the 🗑 Trash header button and the Trash delete option in the action bar. Leave empty to disable soft delete.</p>
+              <div class="help-feature-title">Trash Mode</div>
+              <p class="help-feature-desc">Controls how "Move to Trash" works. <strong>Off</strong> — disables soft delete entirely. <strong>Auto</strong> (default) — creates a <code>.Trash</code> folder beside each source file at execute time; no pre-configuration required. <strong>Custom</strong> — send everything to a single explicit path you specify. The 🗑 Trash panel lists and lets you restore or permanently delete items from whichever mode is active.</p>
             </div>
           </div>
           <div class="help-feature">
@@ -1462,6 +1641,13 @@
             <div class="help-feature-body">
               <div class="help-feature-title">Text Size</div>
               <p class="help-feature-desc">Adjust the base font size of the interface. Choose from Small (12px), Medium (14px, default), or Large (16px). Saved per user and applied instantly without a page reload.</p>
+            </div>
+          </div>
+          <div class="help-feature">
+            <div class="help-feature-icon">❓</div>
+            <div class="help-feature-body">
+              <div class="help-feature-title">Show Unrecognized Files</div>
+              <p class="help-feature-desc">When enabled (the default), files whose type couldn't be detected appear in the file list as ❓ Unknown. Uncheck to hide them. You can also toggle this on the fly with the ❓ button in the filter bar.</p>
             </div>
           </div>
         </div>
@@ -1502,9 +1688,46 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.2.0</span>
+          <span class="cl-version-name">Auto Trash &amp; Settings Cleanup</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Fixed:</strong> Auto trash mode fully functional — Trash panel correctly lists, deletes, and empties items from <code>.Trash</code> folders co-located with source files</li>
+          <li><strong>Changed:</strong> ❓ toggle renamed to "Toggle unrecognized files"; logic inverted (on = show, off = hide); default is <strong>on</strong> (shown); moved to Settings → Appearance → File List</li>
+          <li><strong>Changed:</strong> Settings → Behavior: File Defaults + Folder Defaults merged into <strong>Queue Defaults</strong></li>
+          <li><strong>Changed:</strong> Settings → Housekeeping: Destination Free Space and Storage Color sections merged; trash mode "Disabled" renamed to "Off"</li>
+          <li><strong>Fixed:</strong> Sources/Destinations separator spacing now symmetric on desktop and mobile</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
+          <span class="cl-version-num">v1.1.0</span>
+          <span class="cl-version-name">UX Polish &amp; Mobile Improvements</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Added:</strong> Source filter buttons in the toolbar with free-space labels; collapsible Sources &amp; Destinations bar</li>
+          <li><strong>Added:</strong> Trash mode — Off / Auto (creates <code>.Trash</code> beside the file) / Custom path; Auto is the default</li>
+          <li><strong>Added:</strong> ❓ toggle for unrecognized files in the filter bar (and Settings → Appearance)</li>
+          <li><strong>Added:</strong> Unknown media type is now assignable to any file/folder, not just already-unknown items</li>
+          <li><strong>Added:</strong> Confirmation dialogs for removing sources, destinations, and media type sections; "Don't ask again" option</li>
+          <li><strong>Added:</strong> Clear Queue / Clear History confirmation modals with "Don't ask again"</li>
+          <li><strong>Added:</strong> Storage color meter with Accent / Custom sub-options for static mode</li>
+          <li><strong>Changed:</strong> All / Files / Folders buttons moved to the left of the filter input; column padding reduced</li>
+          <li><strong>Changed:</strong> Trash button is icon-only; button padding reduced; Library name field narrowed</li>
+          <li><strong>Fixed:</strong> Rename now applies to the wrap folder stem in the action preview</li>
+          <li><strong>Fixed:</strong> Mixed-type block no longer affects Delete or Extract actions</li>
+          <li><strong>Fixed:</strong> Warning tooltip on mobile is tap-to-show and stays fully on-screen (<code>position: fixed</code>)</li>
+          <li><strong>Fixed:</strong> Sources/Destinations separator now goes full height; sections auto-size on mobile</li>
+          <li><strong>Fixed:</strong> Complete Series folders no longer misdetected as movies; <code>.nfs*</code> placeholder files handled gracefully</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.0.1</span>
           <span class="cl-version-name">Auth env var rename</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Changed:</strong> Renamed <code>ADMIN_USERNAME</code> → <code>DL_MANAGARR_ADMIN_USERNAME</code> and <code>ADMIN_PASSWORD</code> → <code>DL_MANAGARR_ADMIN_PASSWORD</code> to avoid collisions in a shared <code>.env</code> used by multiple services</li>
@@ -1780,6 +2003,27 @@
   </div>
 </div>
 
+<!-- Clear Confirm -->
+<div class="modal-overlay hidden" id="clear-confirm-overlay">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <h2 id="clear-confirm-title">Clear Queue</h2>
+      <button class="modal-close" id="clear-confirm-close-btn" onclick="closeModal('clear-confirm-overlay');if(_clearConfirmResolve){_clearConfirmResolve(false);_clearConfirmResolve=null;}">×</button>
+    </div>
+    <div class="modal-body">
+      <p id="clear-confirm-message">This will remove all queued actions. Continue?</p>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;font-size:var(--fz-ui)">
+        <input type="checkbox" id="clear-confirm-dont-ask">
+        Don't ask again
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="clear-confirm-cancel-btn" onclick="closeModal('clear-confirm-overlay')">Cancel</button>
+      <button class="btn btn-danger" id="clear-confirm-ok-btn">Clear</button>
+    </div>
+  </div>
+</div>
+
 <!-- Folder Browser -->
 <div class="modal-overlay hidden" id="browser-overlay">
   <div class="modal">
@@ -1815,6 +2059,13 @@
           <input type="checkbox" id="perm-ack-cb" onchange="updateRunOkBtn()">
           <label>I understand that permanently deleted items <strong>cannot be recovered</strong>.</label>
         </div>
+      </div>
+      <div id="delete-empty-src-offer" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--fz-ui)">
+          <input type="checkbox" id="delete-empty-src-cb">
+          Delete source folder(s) if empty after move
+        </label>
+        <p class="field-note" style="margin-top:4px">Only removes folders that become completely empty after their contents are moved. <a href="#" onclick="closeModal('confirm-overlay');openSettings();showSettingsTab('behavior');return false" style="color:var(--accent)">Make this the default in Settings →</a></p>
       </div>
     </div>
     <div class="modal-footer">
@@ -2080,16 +2331,30 @@ async function loadPrefs() {
     if (p.panel_width)   localStorage.setItem('queuePanelWidth', p.panel_width);
     if (p.font_size)     { setFontSize(p.font_size, true); localStorage.setItem('font-size', p.font_size); }
     if (p.folders_first !== undefined) localStorage.setItem('folders-first', p.folders_first);
+    st.filterShowUnknown = p.show_unknown !== false;
+    _applyBadgeVars(p);
   } catch (e) {
     // Server prefs unavailable — st.prefs already holds localStorage fallback values
   }
+}
+
+function _applyBadgeVars(p) {
+  const mode = p.badge_bg_mode || 'accent';
+  const bg   = mode === 'accent' ? 'var(--accent)' : (p.badge_bg_color || '#8b5cf6');
+  const text = p.badge_text_color || '#ffffff';
+  document.documentElement.style.setProperty('--badge-bg',   bg);
+  document.documentElement.style.setProperty('--badge-text', text);
+  const sizeMap = { xs: ['12px','8px'], sm: ['14px','9px'], md: ['16px','10px'], lg: ['20px','12px'], xl: ['24px','14px'] };
+  const [h, fz] = sizeMap[p.badge_size || 'md'] || sizeMap.md;
+  document.documentElement.style.setProperty('--badge-h',  h);
+  document.documentElement.style.setProperty('--badge-fz', fz);
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const st = {
   files: [],            // raw from API
   queue: [],
-  config: { sources: [], destinations: [], trash_folder: null, extract_temp_folder: null, auto_wrap: true, auto_unwrap: true, auto_season_folder: true, delete_empty_source_folder: false },
+  config: { sources: [], destinations: [], trash_folder: null, trash_mode: 'auto', extract_temp_folder: null, auto_wrap: true, auto_unwrap: true, auto_season_folder: true, delete_empty_source_folder: false },
   selected: new Set(),
   folderSizes: {},      // path → computed size
   // sort
@@ -2098,6 +2363,8 @@ const st = {
   filterText: '',
   filterFileType: 'all',     // 'all' | 'file' | 'folder'
   filterContentType: 'all', // 'all' | 'tv' | 'movie'
+  filterSource: 'all',      // 'all' | source label
+  filterShowUnknown: true,
   typeOverrides: {},         // path → 'tv' | 'movie'
   // folder navigation
   navPath:  null,   // null = source roots; string = currently browsed directory
@@ -2155,11 +2422,21 @@ async function init() {
   await Promise.all([loadConfig(), loadQueue()]);
   await loadFiles();
   loadDiskStats();
+  refreshTrashCount();
+}
+
+async function refreshTrashCount() {
+  try {
+    const items = await api('GET', '/api/trash');
+    _trashPaths = new Set((items || []).map(t => t.path));
+    _updateTrashCount();
+  } catch (e) {}
 }
 
 // ── Config ────────────────────────────────────────────────────────────────────
 async function loadConfig() {
   st.config = await api('GET', '/api/config');
+  renderSourceFilterButtons();
   renderContentTypeFilterButtons();
 }
 
@@ -2169,6 +2446,7 @@ async function loadDiskStats() {
     const data = await api('GET', '/api/disk-stats');
     st.diskStats = data.stats || [];
   } catch (_) { st.diskStats = []; }
+  renderSourceFilterButtons();
   renderContentTypeFilterButtons();
 }
 
@@ -2200,6 +2478,30 @@ function fmtFreeShort(free, total) {
   return parts.join(' · ');
 }
 
+function storageColorStyle(free, total) {
+  const mode = st.prefs.storage_color_mode || 'meter';
+  if (mode === 'static') {
+    const type = st.prefs.storage_color_static_type || 'custom';
+    const color = type === 'accent' ? 'var(--accent)' : (st.prefs.storage_color_static || '#8b5cf6');
+    return `color:${color}`;
+  }
+  if (!total || total === 0) return '';
+  const pctFree = free / total;
+  const colors = st.prefs.storage_colors || {};
+  const c = {
+    plenty:  colors.plenty  || '#22c55e',
+    medium:  colors.medium  || '#eab308',
+    low:     colors.low     || '#f97316',
+    warning: colors.warning || '#ef4444',
+  };
+  let color;
+  if (pctFree >= 0.50)      color = c.plenty;
+  else if (pctFree >= 0.20) color = c.medium;
+  else if (pctFree >= 0.10) color = c.low;
+  else                       color = c.warning;
+  return `color:${color}`;
+}
+
 // ── Files ─────────────────────────────────────────────────────────────────────
 async function loadFiles() {
   let data;
@@ -2229,8 +2531,14 @@ function refreshFiles() {
 
 // ── Folder navigation ──────────────────────────────────────────────────────────
 function isQueueLocked(path) {
-  const prefix = path.endsWith('/') ? path : path + '/';
-  return st.queue.some(q => q.source_path === path || q.source_path.startsWith(prefix));
+  const normPath = path.replace(/\/+$/, '');
+  const prefix   = normPath + '/';
+  return st.queue.some(q => {
+    const qPath   = q.source_path.replace(/\/+$/, '');
+    const qPrefix = qPath + '/';
+    // exact match, OR queued item is inside this folder, OR this item is inside a queued folder
+    return qPath === normPath || qPath.startsWith(prefix) || normPath.startsWith(qPrefix);
+  });
 }
 
 function navigateTo(path, label) {
@@ -2296,6 +2604,43 @@ function applyFilter() {
   renderFiles();
 }
 
+// ── Filter bar toggle (Sources/Destinations row) ──────────────────────────────
+function toggleFilterBar() {
+  const collapsed = localStorage.getItem('srcFilterCollapsed') === 'true';
+  const newState = !collapsed;
+  localStorage.setItem('srcFilterCollapsed', newState);
+  _applyFilterBarState(newState);
+}
+
+function _applyFilterBarState(collapsed) {
+  const row   = document.getElementById('toolbar-row-types');
+  const label = document.getElementById('toolbar-toggle-label');
+  if (row)   row.style.display   = collapsed ? 'none' : '';
+  if (label) label.innerHTML     = collapsed ? '▶ Sources &amp; Destinations' : '▼ Sources &amp; Destinations';
+}
+
+// Restore collapse state on page load (called after DOM is ready)
+(function() {
+  const collapsed = localStorage.getItem('srcFilterCollapsed') === 'true';
+  _applyFilterBarState(collapsed);
+})();
+
+function renderSourceFilterButtons() {
+  const container = document.getElementById('source-filter-btns');
+  if (!container) return;
+  const sources = (st.config && st.config.sources) || [];
+  const showFree = st.prefs.dest_free_show !== false && st.diskStats.length > 0;
+  container.innerHTML = sources.map(s => {
+    let freeLabel = '';
+    if (showFree) {
+      const stat = getDiskStat(s.path);
+      if (stat) freeLabel = `<span class="btn-free-info" style="${storageColorStyle(stat.free, stat.total)}">${fmtFreeShort(stat.free, stat.total)}</span>`;
+    }
+    const active = st.filterSource === s.label ? ' active' : '';
+    return `<button class="type-filter-btn${active}" id="tfb-src-${esc(s.label)}" onclick="setSourceFilter('${esc(s.label)}')">${esc(s.label)}${freeLabel}</button>`;
+  }).join('');
+}
+
 function renderContentTypeFilterButtons() {
   const container = document.getElementById('content-type-filter-btns');
   if (!container) return;
@@ -2307,7 +2652,7 @@ function renderContentTypeFilterButtons() {
       const dests = (st.config.destinations || []).filter(d => (d.dest_type || 'tv') === t);
       if (dests.length) {
         const stat = getDiskStat(dests[0].path);
-        if (stat) freeLabel = `<span class="btn-free-info">${fmtFreeShort(stat.free, stat.total)}</span>`;
+        if (stat) freeLabel = `<span class="btn-free-info" style="${storageColorStyle(stat.free, stat.total)}">${fmtFreeShort(stat.free, stat.total)}</span>`;
       }
     }
     return `<button class="type-filter-btn${st.filterContentType === t ? ' active' : ''}"
@@ -2317,7 +2662,7 @@ function renderContentTypeFilterButtons() {
 }
 
 function _updateFilterButtons() {
-  const isAll = st.filterFileType === 'all' && st.filterContentType === 'all';
+  const isAll = st.filterFileType === 'all' && st.filterContentType === 'all' && st.filterSource === 'all';
   document.getElementById('tfb-all').classList.toggle('active', isAll);
   document.getElementById('tfb-file').classList.toggle('active', st.filterFileType === 'file');
   document.getElementById('tfb-folder').classList.toggle('active', st.filterFileType === 'folder');
@@ -2326,10 +2671,20 @@ function _updateFilterButtons() {
     const t = btn.id.replace('tfb-ct-', '');
     btn.classList.toggle('active', st.filterContentType === t);
   });
+  // Update source buttons
+  document.querySelectorAll('#source-filter-btns .type-filter-btn').forEach(btn => {
+    const label = btn.id.replace('tfb-src-', '');
+    btn.classList.toggle('active', st.filterSource === label);
+  });
+  document.getElementById('tfb-hide-unknown')?.classList.toggle('active', st.filterShowUnknown);
 }
 
 function setAllFilter() {
-  st.filterFileType = 'all'; st.filterContentType = 'all';
+  st.filterFileType = 'all'; st.filterContentType = 'all'; st.filterSource = 'all'; st.filterShowUnknown = true;
+  _updateFilterButtons(); renderFiles();
+}
+function toggleHideUnknown() {
+  st.filterShowUnknown = !st.filterShowUnknown;
   _updateFilterButtons(); renderFiles();
 }
 function setFileTypeFilter(type) {
@@ -2340,6 +2695,10 @@ function setContentTypeFilter(type) {
   st.filterContentType = st.filterContentType === type ? 'all' : type;
   _updateFilterButtons(); renderFiles();
 }
+function setSourceFilter(label) {
+  st.filterSource = st.filterSource === label ? 'all' : label;
+  _updateFilterButtons(); renderFiles();
+}
 
 function visibleFiles() {
   let list = st.files;
@@ -2348,6 +2707,12 @@ function visibleFiles() {
   }
   if (st.filterContentType !== 'all') {
     list = list.filter(f => getMediaType(f) === st.filterContentType);
+  }
+  if (st.filterSource !== 'all') {
+    list = list.filter(f => f.source_label === st.filterSource);
+  }
+  if (!st.filterShowUnknown) {
+    list = list.filter(f => getMediaType(f) !== 'unknown');
   }
   if (st.filterText) {
     list = list.filter(f =>
@@ -2422,7 +2787,7 @@ function renderFiles() {
     const mediaType = getMediaType(f);
     const isUnknown = mediaType === 'unknown';
     const isDir     = f.type === 'folder';
-    const isLocked  = isDir && isQueueLocked(f.path);
+    const isLocked  = isQueueLocked(f.path);
     if (st.selected.has(f.path)) tr.classList.add('selected');
     if (isUnknown) tr.classList.add('unknown-type');
     if (isLocked)  tr.classList.add('queue-locked');
@@ -2437,23 +2802,25 @@ function renderFiles() {
       sizeTxt = humanSize(f.size);
     }
     const dateTxt = f.modified ? humanDate(f.modified * 1000) : '—';
-    const typeCell = `<td>${renderMediaTypeSelect(f)}</td>`;
     // Folder name is always clickable to navigate in; lock badge shown if locked
+    const lockTip = isDir
+      ? 'Queued action on or inside this folder. Remove the item(s) from the queue to unlock. You can still navigate inside.'
+      : 'This file has a queued action. Remove it from the queue to unlock.';
     const lockBadge = isLocked
-      ? `<span class="lock-badge info-tip">🔒<span class="tip-text">Queued action on or inside this folder. Cannot move, copy, or delete it until resolved. Remove the item(s) from the queue to unlock. You can still navigate inside.</span></span>`
+      ? `<span class="lock-badge info-tip">🔒<span class="tip-text">${lockTip}</span></span>`
       : '';
     const nameCell = isDir
       ? `<span class="file-name-text folder-link" title="${esc(f.path)}" onclick="navigateTo('${esc(f.path)}','${esc(f.name)}')">${esc(f.name)}</span>${lockBadge}`
-      : `<span class="file-name-text" title="${esc(f.path)}">${esc(f.name)}</span>`;
+      : `<span class="file-name-text" title="${esc(f.path)}">${esc(f.name)}</span>${lockBadge}`;
     const cbDisabled = isUnknown || isLocked ? 'disabled' : '';
     tr.innerHTML = `
       <td><input type="checkbox" ${cbDisabled} ${st.selected.has(f.path) ? 'checked' : ''} onchange="toggleSelect('${esc(f.path)}', this.checked)"></td>
       <td>${icon}</td>
       <td>${nameCell}</td>
-      <td><span class="source-badge">${esc(f.source_label)}</span></td>
-      ${typeCell}
-      <td class="file-size" id="size-cell-${cssId(f.path)}">${sizeTxt}</td>
-      <td class="file-date">${dateTxt}</td>
+      <td class="col-right"><span class="source-badge">${esc(f.source_label)}</span></td>
+      <td class="col-right">${renderMediaTypeSelect(f)}</td>
+      <td class="file-size col-right" id="size-cell-${cssId(f.path)}">${sizeTxt}</td>
+      <td class="file-date col-right">${dateTxt}</td>
     `;
     frag.appendChild(tr);
   });
@@ -2488,7 +2855,9 @@ function renderMediaTypeSelect(f) {
   options += types.map(t =>
     `<option value="${t}" ${!isUnknown && type === t ? 'selected' : ''}>${typeEmoji(t)} ${typeLabel(t)}</option>`
   ).join('');
-  options += `<option disabled>──────────</option><option value="_settings">⚙ Add Type</option>`;
+  options += `<option disabled>──────────</option>`;
+  if (!isUnknown) options += `<option value="unknown">❓ Unknown</option>`;
+  options += `<option value="_settings">⚙ Add Type</option>`;
   const cls = isUnknown ? 'mt-unknown' : type === 'tv' ? 'mt-tv' : type === 'movie' ? 'mt-movie' : type === 'music' ? 'mt-music' : 'mt-custom';
   const title = isOverridden ? ' title="Manually set"' : '';
   return `<select class="media-type-sel ${cls}"${title} onchange="onMediaTypeChange('${esc(f.path)}', this.value)" onclick="event.stopPropagation()">
@@ -2503,7 +2872,11 @@ function onMediaTypeChange(path, value) {
     renderFiles(); // resets select back to its current type
     return;
   }
-  if (value === 'unknown') return; // can't manually set to unknown
+  if (value === 'unknown') {
+    delete st.typeOverrides[path]; // reset override → let auto-detection run
+    renderFiles();
+    return;
+  }
   st.typeOverrides[path] = value;
   renderFiles();
   if (st.selected.size > 0) {
@@ -2545,7 +2918,7 @@ function toggleSelect(path, checked) {
 function toggleSelectAll(checked) {
   visibleFiles().forEach(f => {
     if (getMediaType(f) === 'unknown') return;
-    if (f.type === 'folder' && isQueueLocked(f.path)) return;
+    if (isQueueLocked(f.path)) return;
     checked ? st.selected.add(f.path) : st.selected.delete(f.path);
   });
   renderFiles();
@@ -2564,7 +2937,7 @@ function updateSelectionUI() {
   document.getElementById('action-bar').classList.toggle('visible', n > 0);
   document.getElementById('ab-sel-count').textContent = `${n} selected`;
   const vis = visibleFiles();
-  const selectable = vis.filter(f => getMediaType(f) !== 'unknown' && !(f.type === 'folder' && isQueueLocked(f.path)));
+  const selectable = vis.filter(f => getMediaType(f) !== 'unknown' && !isQueueLocked(f.path));
   document.getElementById('select-all').checked = selectable.length > 0 && selectable.every(f => st.selected.has(f.path));
   renderFiles();
   updateWrapVisibility(true);
@@ -2605,6 +2978,7 @@ function onActionChange() {
   }
 
   updateTrashAvailability();
+  updateRootDestWarning();
   updateActionPreview();
 }
 
@@ -2722,8 +3096,12 @@ function updateActionPreview() {
     const unwrap = document.getElementById('ab-unwrap').checked && first?.type === 'folder';
     const arrow  = dest ? ` → ${dest}` : '';
     if (n === 1 && wrap) {
-      const stem = firstName.replace(/\.[^.]+$/, '');
-      preview = `${verb} "${firstName}" → ${dest ? dest + '/' : ''}${stem}/`;
+      const renFmt = document.getElementById('ab-rename-format')?.value || 'original';
+      const displayName = renFmt !== 'original'
+        ? (document.getElementById('ab-rename-preview')?.textContent || firstName)
+        : firstName;
+      const stem = displayName.replace(/\.[^.]+$/, '');
+      preview = `${verb} "${displayName}" → ${dest ? dest + '/' : ''}${stem}/`;
     } else if (n === 1 && unwrap) {
       preview = `${verb} contents of "${firstName}"${arrow}`;
     } else {
@@ -2732,6 +3110,23 @@ function updateActionPreview() {
   }
 
   el.textContent = preview;
+}
+
+function toggleAlertTip(el, e) {
+  e.stopPropagation();
+  const isOpen = !el.classList.contains('tip-open');
+  el.classList.toggle('tip-open', isOpen);
+  if (isOpen) {
+    // Position tooltip just above the action bar so it never goes off-screen
+    const tip = el.querySelector('.alert-tooltip');
+    if (tip) {
+      const bar = document.getElementById('action-bar');
+      const barTop = bar ? bar.getBoundingClientRect().top : window.innerHeight * 0.65;
+      tip.style.bottom = Math.round(window.innerHeight - barTop + 8) + 'px';
+    }
+    const close = () => { el.classList.remove('tip-open'); document.removeEventListener('click', close); };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
 }
 
 function updateRootDestWarning() {
@@ -2851,12 +3246,15 @@ function updateWrapVisibility(autoSet = false) {
 
 function updateTrashAvailability() {
   const trashRadio = document.getElementById('del-trash');
-  const hasTrash = !!st.config.trash_folder;
+  const mode = st.config.trash_mode || 'auto';
+  const hasTrash = mode === 'auto' || (mode === 'custom' && !!st.config.trash_folder);
   trashRadio.disabled = !hasTrash;
   if (hasTrash) trashRadio.checked = true;
   else document.getElementById('del-perm').checked = true;
   document.getElementById('trash-btn').style.display = hasTrash ? '' : 'none';
-  document.getElementById('trash-unconfigured-note').style.display = hasTrash ? 'none' : '';
+  // Show "configure trash folder" note only when mode is custom and no folder set
+  const showNote = mode === 'custom' && !st.config.trash_folder;
+  document.getElementById('trash-unconfigured-note').style.display = showNote ? '' : 'none';
 }
 
 async function renderActionBarDestinations() {
@@ -3214,8 +3612,44 @@ async function persistQueue() {
   renderQueue();
 }
 
+let _clearConfirmResolve = null;
+
+function showClearConfirm(type) {
+  return new Promise(resolve => {
+    _clearConfirmResolve = resolve;
+    const isQueue = type === 'queue';
+    document.getElementById('clear-confirm-title').textContent = isQueue ? 'Clear Queue' : 'Clear History';
+    document.getElementById('clear-confirm-message').textContent = isQueue
+      ? 'This will remove all queued actions. Continue?'
+      : 'This will clear all history entries. Continue?';
+    document.getElementById('clear-confirm-dont-ask').checked = false;
+    document.getElementById('clear-confirm-ok-btn').onclick = () => {
+      const dontAsk = document.getElementById('clear-confirm-dont-ask').checked;
+      if (dontAsk) {
+        const key = isQueue ? 'skip_clear_queue_confirm' : 'skip_clear_history_confirm';
+        savePrefs({ [key]: true });
+        // Update the settings checkbox if visible
+        const cbId = isQueue ? 'pref-confirm-clear-queue' : 'pref-confirm-clear-history';
+        const cb = document.getElementById(cbId);
+        if (cb) cb.checked = false;
+      }
+      closeModal('clear-confirm-overlay');
+      if (_clearConfirmResolve) { _clearConfirmResolve(true); _clearConfirmResolve = null; }
+    };
+    document.getElementById('clear-confirm-cancel-btn').onclick = () => {
+      closeModal('clear-confirm-overlay');
+      if (_clearConfirmResolve) { _clearConfirmResolve(false); _clearConfirmResolve = null; }
+    };
+    openModal('clear-confirm-overlay');
+  });
+}
+
 async function clearQueue() {
-  if (st.queue.length > 0 && !confirm('Clear all queued actions?')) return;
+  if (st.queue.length === 0) return;
+  if (!st.prefs.skip_clear_queue_confirm) {
+    const confirmed = await showClearConfirm('queue');
+    if (!confirmed) return;
+  }
   st.queue = [];
   await api('DELETE', '/api/queue');
   renderQueue();
@@ -3299,8 +3733,12 @@ function renderQueue() {
   const runBtn = document.getElementById('run-btn');
   const badge  = document.getElementById('queue-badge');
 
-  const mobileQBtn = document.getElementById('mobile-queue-btn');
-  if (mobileQBtn) mobileQBtn.textContent = st.queue.length > 0 ? `☰ ${st.queue.length}` : '☰';
+  const mobileQBtn    = document.getElementById('mobile-queue-btn');
+  const mobileBadge   = document.getElementById('mobile-queue-badge');
+  if (mobileBadge) {
+    mobileBadge.textContent    = st.queue.length;
+    mobileBadge.style.display  = st.queue.length > 0 ? '' : 'none';
+  }
 
   if (st.queue.length === 0) {
     listEl.innerHTML = '';
@@ -3351,6 +3789,7 @@ function renderQueue() {
 function confirmRun() {
   if (st.queue.length === 0) return;
   const hasPerm = st.queue.some(q => q.action_type === 'delete_permanent');
+  const hasMoves = st.queue.some(q => q.action_type === 'move');
   const list = document.getElementById('confirm-list');
   list.innerHTML = '';
   st.queue.forEach(item => {
@@ -3362,6 +3801,12 @@ function confirmRun() {
   document.getElementById('perm-ack-wrap').style.display = hasPerm ? '' : 'none';
   document.getElementById('perm-ack-cb').checked = false;
   document.getElementById('run-ok-btn').disabled = hasPerm;
+  const emptyOffer = document.getElementById('delete-empty-src-offer');
+  if (emptyOffer) {
+    emptyOffer.style.display = hasMoves ? '' : 'none';
+    const cb = document.getElementById('delete-empty-src-cb');
+    if (cb) cb.checked = !!st.config.delete_empty_source_folder;
+  }
   openModal('confirm-overlay');
 }
 
@@ -3371,7 +3816,13 @@ function updateRunOkBtn() {
 }
 
 // ── Execute (one-at-a-time with live progress) ────────────────────────────────
-function startExecution() {
+async function startExecution() {
+  const emptyOffer = document.getElementById('delete-empty-src-offer');
+  if (emptyOffer && emptyOffer.style.display !== 'none') {
+    const deleteEmpty = document.getElementById('delete-empty-src-cb')?.checked ?? false;
+    st.queue = st.queue.map(q => q.action_type === 'move' ? { ...q, delete_empty_source: deleteEmpty } : q);
+    await persistQueue();
+  }
   closeModal('confirm-overlay');
   st._execMode   = 'queue';
   st.execTotal   = st.queue.length * 2;  // transfer step + verify step per item
@@ -3568,6 +4019,103 @@ function onCustomAccentHex(val) {
   }
 }
 
+function onStorageColorMode(mode) {
+  const scStatic = document.getElementById('storage-color-static-section');
+  const scMeter  = document.getElementById('storage-color-meter-section');
+  if (scStatic) scStatic.style.display = mode === 'static' ? 'flex' : 'none';
+  if (scMeter)  scMeter.style.display  = mode === 'meter'  ? ''     : 'none';
+  savePrefs({ storage_color_mode: mode });
+  renderSourceFilterButtons(); renderContentTypeFilterButtons();
+}
+function onStorageStaticType(type) {
+  const row = document.getElementById('storage-static-custom-row');
+  if (row) row.style.display = type === 'custom' ? 'flex' : 'none';
+  savePrefs({ storage_color_static_type: type });
+  renderSourceFilterButtons(); renderContentTypeFilterButtons();
+}
+function onStorageStaticColor(hex) {
+  const h = document.getElementById('storage-color-static-hex');
+  if (h) h.value = hex;
+  savePrefs({ storage_color_static: hex });
+  renderSourceFilterButtons(); renderContentTypeFilterButtons();
+}
+function onStorageStaticHex(val) {
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    const p = document.getElementById('storage-color-static-picker');
+    if (p) p.value = val;
+    savePrefs({ storage_color_static: val });
+    renderSourceFilterButtons(); renderContentTypeFilterButtons();
+  }
+}
+function onStorageMeterColor(key, hex) {
+  const h = document.getElementById(`sc-${key}-hex`);
+  if (h) h.value = hex;
+  const colors = { ...(st.prefs.storage_colors || {}) };
+  colors[key] = hex;
+  savePrefs({ storage_colors: colors });
+  renderSourceFilterButtons(); renderContentTypeFilterButtons();
+}
+function onStorageMeterHex(key, val) {
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    const p = document.getElementById(`sc-${key}-picker`);
+    if (p) p.value = val;
+    const colors = { ...(st.prefs.storage_colors || {}) };
+    colors[key] = val;
+    savePrefs({ storage_colors: colors });
+    renderSourceFilterButtons(); renderContentTypeFilterButtons();
+  }
+}
+function resetStorageColors() {
+  const defaults = { warning: '#ef4444', low: '#f97316', medium: '#eab308', plenty: '#22c55e' };
+  savePrefs({ storage_colors: defaults });
+  [['warning','#ef4444'],['low','#f97316'],['medium','#eab308'],['plenty','#22c55e']].forEach(([k,def]) => {
+    const mp = document.getElementById(`sc-${k}-picker`);
+    const mh = document.getElementById(`sc-${k}-hex`);
+    if (mp) mp.value = def;
+    if (mh) mh.value = def;
+  });
+  renderSourceFilterButtons(); renderContentTypeFilterButtons();
+}
+
+function onBadgeBgMode(mode) {
+  const row = document.getElementById('badge-bg-custom-row');
+  if (row) row.style.display = mode === 'custom' ? 'flex' : 'none';
+  savePrefs({ badge_bg_mode: mode });
+  _applyBadgeVars(st.prefs);
+}
+function onBadgeBgColor(hex) {
+  const h = document.getElementById('badge-bg-hex');
+  if (h) h.value = hex;
+  savePrefs({ badge_bg_color: hex });
+  _applyBadgeVars(st.prefs);
+}
+function onBadgeBgHex(val) {
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    const p = document.getElementById('badge-bg-picker');
+    if (p) p.value = val;
+    savePrefs({ badge_bg_color: val });
+    _applyBadgeVars(st.prefs);
+  }
+}
+function onBadgeTextColor(hex) {
+  const h = document.getElementById('badge-text-hex');
+  if (h) h.value = hex;
+  savePrefs({ badge_text_color: hex });
+  _applyBadgeVars(st.prefs);
+}
+function onBadgeTextHex(val) {
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    const p = document.getElementById('badge-text-picker');
+    if (p) p.value = val;
+    savePrefs({ badge_text_color: val });
+    _applyBadgeVars(st.prefs);
+  }
+}
+function onBadgeSize(size) {
+  savePrefs({ badge_size: size });
+  _applyBadgeVars(st.prefs);
+}
+
 function showSettingsTab(tab) {
   document.querySelectorAll('.settings-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.settings-pane').forEach(p => p.classList.toggle('active', p.id === `settings-tab-${tab}`));
@@ -3610,6 +4158,48 @@ function showSettingsTab(tab) {
     // Sync folders-first toggle
     const ff = document.getElementById('pref-folders-first');
     if (ff) ff.checked = !!p.folders_first;
+    // Sync storage color settings
+    const scMode = p.storage_color_mode || 'meter';
+    document.querySelectorAll('input[name="storage-color-mode"]').forEach(r => { r.checked = r.value === scMode; });
+    const scStatic = document.getElementById('storage-color-static-section');
+    const scMeter  = document.getElementById('storage-color-meter-section');
+    if (scStatic) scStatic.style.display = scMode === 'static' ? 'flex' : 'none';
+    if (scMeter)  scMeter.style.display  = scMode === 'meter'  ? ''     : 'none';
+    const staticColor = p.storage_color_static || '#8b5cf6';
+    const sp = document.getElementById('storage-color-static-picker');
+    const sh = document.getElementById('storage-color-static-hex');
+    if (sp) sp.value = staticColor;
+    if (sh) sh.value = staticColor;
+    const staticType = p.storage_color_static_type || 'custom';
+    document.querySelectorAll('input[name="storage-static-type"]').forEach(r => { r.checked = r.value === staticType; });
+    const scCustomRow = document.getElementById('storage-static-custom-row');
+    if (scCustomRow) scCustomRow.style.display = staticType === 'custom' ? 'flex' : 'none';
+    const sc = p.storage_colors || {};
+    [['warning','#ef4444'],['low','#f97316'],['medium','#eab308'],['plenty','#22c55e']].forEach(([k,def]) => {
+      const col = sc[k] || def;
+      const mp = document.getElementById(`sc-${k}-picker`);
+      const mh = document.getElementById(`sc-${k}-hex`);
+      if (mp) mp.value = col;
+      if (mh) mh.value = col;
+    });
+    // Sync badge color settings
+    const badgeMode = p.badge_bg_mode || 'accent';
+    document.querySelectorAll('input[name="badge-bg-mode"]').forEach(r => { r.checked = r.value === badgeMode; });
+    const badgeBgCustomRow = document.getElementById('badge-bg-custom-row');
+    if (badgeBgCustomRow) badgeBgCustomRow.style.display = badgeMode === 'custom' ? 'flex' : 'none';
+    const badgeBgColor = p.badge_bg_color || '#8b5cf6';
+    const bbp = document.getElementById('badge-bg-picker');
+    const bbh = document.getElementById('badge-bg-hex');
+    if (bbp) bbp.value = badgeBgColor;
+    if (bbh) bbh.value = badgeBgColor;
+    const badgeTextColor = p.badge_text_color || '#ffffff';
+    const btp = document.getElementById('badge-text-picker');
+    const bth = document.getElementById('badge-text-hex');
+    if (btp) btp.value = badgeTextColor;
+    if (bth) bth.value = badgeTextColor;
+    // Sync badge size
+    const badgeSize = p.badge_size || 'md';
+    document.querySelectorAll('input[name="badge-size"]').forEach(r => { r.checked = r.value === badgeSize; });
   }
 }
 
@@ -3625,6 +4215,10 @@ function openSettings() {
     const listEl = document.getElementById(`dest-${type}-list`);
     if (listEl) addDestRow(d.label, d.path, type, `dest-${type}-list`, !!d.env_managed);
   });
+  // Trash mode — set radio and show/hide custom section
+  const trashMode = st.config.trash_mode || 'auto';
+  document.querySelectorAll('input[name="trash-mode"]').forEach(r => { r.checked = r.value === trashMode; });
+  onTrashMode(trashMode);
   // Trash — show env-managed variant if controlled by TRASH_FOLDER env var
   const trashEnv = !!st.config.trash_env_managed;
   document.getElementById('trash-input-editable').style.display = trashEnv ? 'none' : '';
@@ -3647,12 +4241,30 @@ function openSettings() {
   document.getElementById('pref-dest-free-show').checked = st.prefs.dest_free_show !== false;
   const dfFmt = st.prefs.dest_free_format || 'free';
   document.querySelectorAll('input[name="dest-free-format"]').forEach(r => { r.checked = r.value === dfFmt; });
+  // Confirmation dialog prefs
+  const p = st.prefs;
+  const ccq = document.getElementById('pref-confirm-clear-queue');
+  if (ccq) ccq.checked = !p.skip_clear_queue_confirm;
+  const cch = document.getElementById('pref-confirm-clear-history');
+  if (cch) cch.checked = !p.skip_clear_history_confirm;
+  const ccr = document.getElementById('pref-confirm-remove');
+  if (ccr) ccr.checked = !p.skip_remove_confirm;
+  const phu = document.getElementById('pref-hide-unknown');
+  if (phu) phu.checked = p.show_unknown !== false;
   openModal('settings-overlay');
+}
+
+function onTrashMode(mode) {
+  document.getElementById('trash-custom-section').style.display = mode === 'custom' ? '' : 'none';
+  // Sync radio buttons in case called programmatically
+  document.querySelectorAll('input[name="trash-mode"]').forEach(r => { r.checked = r.value === mode; });
 }
 
 function renderTypeTags(types) {
   const builtIn = { tv: '📺', movie: '🎬', music: '🎵', games: '🎮', books: '📚', podcasts: '🎙', comics: '📖', anime: '🎌', courses: '🎓' };
-  document.getElementById('type-tags-row').innerHTML = types.map(type => {
+  const row = document.getElementById('type-tags-row');
+  if (!row) return;
+  row.innerHTML = types.map(type => {
     const icon = _editingTypeIcons[type] || builtIn[type] || '📁';
     return `<span class="type-tag">` +
       `<button class="tag-icon-btn" data-type="${type}" title="Click to change icon" onclick="editTypeIcon('${type}')">${icon}</button>` +
@@ -3676,18 +4288,28 @@ function editTypeIcon(type) {
   input.focus();
   input.select();
   let committed = false;
+  const _restoreBtn = (icon) => {
+    const newBtn = document.createElement('button');
+    newBtn.className = 'tag-icon-btn';
+    newBtn.dataset.type = type;
+    newBtn.title = 'Click to change icon';
+    newBtn.setAttribute('onclick', `editTypeIcon('${type}')`);
+    newBtn.textContent = icon;
+    input.replaceWith(newBtn);
+  };
   const commit = () => {
     if (committed) return;
     committed = true;
     const val = input.value.trim();
     if (val && val !== (builtIn[type] || '📁')) _editingTypeIcons[type] = val;
     else delete _editingTypeIcons[type];
+    _restoreBtn(_editingTypeIcons[type] || builtIn[type] || '📁');
     renderTypeTags(_editingTypes);
   };
   input.addEventListener('blur', commit);
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-    if (e.key === 'Escape') { committed = true; renderTypeTags(_editingTypes); }
+    if (e.key === 'Escape') { committed = true; _restoreBtn(current); }
   });
 }
 
@@ -3705,7 +4327,11 @@ function addDestSection(type) {
   section.className = 'settings-section';
   section.dataset.sectionType = type;
   section.innerHTML = `
-    <h3>${emoji} ${label} Destinations</h3>
+    <h3 style="display:flex;align-items:center;gap:6px">
+      <button class="tag-icon-btn" data-type="${type}" title="Click to change icon" onclick="editTypeIcon('${type}')">${emoji}</button>
+      ${label} Destinations
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:12px;padding:1px 6px;line-height:1.4" title="Remove ${label} type" onclick="_removeTypeTag('${type}')">×</button>
+    </h3>
     ${type === 'tv' ? '<p class="field-note">Subfolders (show folders) are offered as move targets.</p>' : ''}
     <div id="dest-${type}-list"></div>
     <button class="btn btn-secondary btn-sm" onclick="addDestRow('','','${type}','dest-${type}-list')">+ Add ${label} Destination</button>
@@ -3727,7 +4353,18 @@ function addMediaTypeSetting() {
   addDestSection(val);
 }
 
+function confirmRemoveRow(btn, rowType) {
+  if (!st.prefs.skip_remove_confirm) {
+    const label = btn.closest('.source-item')?.querySelector('.label-input')?.value?.trim() || rowType;
+    if (!confirm(`Remove "${label}"?`)) return;
+  }
+  btn.closest('.source-item').remove();
+}
+
 function _removeTypeTag(type) {
+  if (!st.prefs.skip_remove_confirm) {
+    if (!confirm(`Remove the "${typeLabel(type)}" media type and all its destinations?`)) return;
+  }
   _editingTypes = _editingTypes.filter(t => t !== type);
   renderTypeTags(_editingTypes);
   const section = document.querySelector(`#dest-sections-container [data-section-type="${type}"]`);
@@ -3755,10 +4392,10 @@ function addSourceRow(label = '', path = '', envManaged = false) {
       <input class="label-input" type="text" placeholder="Label" value="${esc(label)}">
       <div class="path-input-wrap" style="display:flex;align-items:center;gap:6px">
         <input type="text" class="path-input" id="${id}" placeholder="/mnt/downloads" value="${esc(path)}" style="flex:1">
-        <button class="btn btn-secondary btn-sm" onclick="openBrowser('${id}')">Browse</button>
+        <button class="btn btn-secondary btn-sm" onclick="openBrowser('${id}')" title="Browse">📂</button>
         ${freeTag}
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="this.closest('.source-item').remove()">✕</button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmRemoveRow(this,'source')">✕</button>
     `;
   }
   sl.appendChild(div);
@@ -3787,10 +4424,10 @@ function addDestRow(label = '', path = '', dest_type = 'tv', listId = 'dest-tv-l
       <input class="label-input" type="text" placeholder="Label" value="${esc(label)}">
       <div class="path-input-wrap" style="display:flex;align-items:center;gap:6px">
         <input type="text" class="path-input" id="${id}" placeholder="/media/${dest_type}" value="${esc(path)}" style="flex:1">
-        <button class="btn btn-secondary btn-sm" onclick="openBrowser('${id}')">Browse</button>
+        <button class="btn btn-secondary btn-sm" onclick="openBrowser('${id}')" title="Browse">📂</button>
         ${freeTag}
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="this.closest('.source-item').remove()">✕</button>
+      <button class="btn btn-ghost btn-sm" onclick="confirmRemoveRow(this,'destination')">✕</button>
     `;
   }
   dl.appendChild(div);
@@ -3812,9 +4449,11 @@ async function saveSettings() {
   });
   const media_types = [..._editingTypes];
   const trashEnvManaged = !!st.config.trash_env_managed;
+  const trash_mode_radio = document.querySelector('input[name="trash-mode"]:checked');
+  const trash_mode = trash_mode_radio ? trash_mode_radio.value : 'auto';
   const trash_folder = trashEnvManaged
     ? (st.config.trash_folder || null)
-    : (document.getElementById('trash-path').value.trim() || null);
+    : (trash_mode === 'custom' ? (document.getElementById('trash-path').value.trim() || null) : null);
   const extract_temp_folder       = document.getElementById('extract-temp-path').value.trim() || null;
   const auto_wrap                 = document.getElementById('cfg-auto-wrap').checked;
   const auto_unwrap               = document.getElementById('cfg-auto-unwrap').checked;
@@ -3823,7 +4462,7 @@ async function saveSettings() {
   const delete_empty_source_folder = document.getElementById('cfg-delete-empty-source').checked;
   const history_days              = parseInt(document.getElementById('cfg-history-days').value, 10);
   const type_icons = { ..._editingTypeIcons };
-  const config = { sources, destinations, trash_folder, extract_temp_folder, auto_wrap, auto_unwrap, auto_season_folder, block_mixed_types, delete_empty_source_folder, history_days, media_types, type_icons };
+  const config = { sources, destinations, trash_folder, trash_mode, extract_temp_folder, auto_wrap, auto_unwrap, auto_season_folder, block_mixed_types, delete_empty_source_folder, history_days, media_types, type_icons };
   await api('POST', '/api/config', config);
   st.config = config;
   loadDiskStats();
@@ -3831,6 +4470,7 @@ async function saveSettings() {
   if (st.filterContentType !== 'all' && !config.media_types.includes(st.filterContentType)) {
     st.filterContentType = 'all';
   }
+  renderSourceFilterButtons();
   renderContentTypeFilterButtons();
   _updateFilterButtons();
   closeModal('settings-overlay');
@@ -3898,6 +4538,10 @@ document.querySelectorAll('.modal-overlay').forEach(ov => {
   ov.addEventListener('click', e => {
     if (e.target === ov && ov.id !== 'conflict-overlay' && ov.id !== 'progress-overlay') {
       ov.classList.add('hidden');
+      if (ov.id === 'clear-confirm-overlay' && _clearConfirmResolve) {
+        _clearConfirmResolve(false);
+        _clearConfirmResolve = null;
+      }
     }
   });
 });
@@ -3932,7 +4576,9 @@ function fileIcon(name) {
   return m[ext] || '📄';
 }
 const TV_RE = /[Ss]\d{1,2}[Ee]\d{1,2}|\b\d{1,2}[xX]\d{2}\b/;
-function looksLikeTVEpisode(name) { return TV_RE.test(name); }
+// Complete series / season pack patterns — no episode code but clearly TV
+const TV_COMPLETE_RE = /\bCOMPLETE[.\s_-]?(?:SERIES|SEASON|PACK|SHOW|BOX[.\s_-]?SET)\b|\bFULL[.\s_-]?SERIES\b|\bSEASON[.\s_-]?\d+[.\s_-]COMPLETE\b/i;
+function looksLikeTVEpisode(name) { return TV_RE.test(name) || TV_COMPLETE_RE.test(name); }
 function extractSeason(name) {
   const m = name.match(/[Ss](\d{1,2})[Ee]\d{1,2}/) || name.match(/\b(\d{1,2})[xX]\d{2}\b/);
   return m ? m[1].padStart(2, '0') : null;
@@ -3972,6 +4618,8 @@ const MOVIE_VIDEO_EXT_RE = /\.(mkv|mp4|avi|mov|m4v|wmv|flv|ts|m2ts|webm|divx|xvi
 const MOVIE_YEAR_RE = /\b(19|20)\d{2}\b/;
 const MOVIE_QUALITY_RE = /\b(1080p|720p|2160p|4k|480p|bluray|blu-ray|web-dl|webrip|hdtv|bdrip|dvdrip|hdrip|remux|uhd|hdr|dv|imax)\b/i;
 function looksLikeMovie(name) {
+  // Complete series / season packs are TV, not movies
+  if (TV_COMPLETE_RE.test(name)) return false;
   if (MOVIE_VIDEO_EXT_RE.test(name)) return true;
   if (MOVIE_YEAR_RE.test(name) && MOVIE_QUALITY_RE.test(name)) return true;
   // Folder: year alone is often enough (e.g. "The.Thing.1982")
@@ -4183,6 +4831,10 @@ async function revertHistoryItem(id, btn) {
 }
 
 async function clearHistory() {
+  if (!st.prefs.skip_clear_history_confirm) {
+    const confirmed = await showClearConfirm('history');
+    if (!confirmed) return;
+  }
   const lockedItems = _allHistory.filter(item =>
     item.action_type === 'delete_trash' &&
     item.status === 'success' &&
@@ -4191,10 +4843,6 @@ async function clearHistory() {
   );
   const lockedIds = lockedItems.map(item => item.id);
   const n = lockedIds.length;
-  const msg = n > 0
-    ? `Clear history? ${n} trashed item${n !== 1 ? 's' : ''} will stay locked until restored or permanently deleted.`
-    : 'Clear all history?';
-  if (!confirm(msg)) return;
   await api('DELETE', '/api/history', n > 0 ? { exclude_ids: lockedIds } : {});
   _allHistory = lockedItems;
   renderFilteredHistory();
@@ -4270,6 +4918,13 @@ document.addEventListener('keydown', e => {
 // ── Trash ─────────────────────────────────────────────────────────────────────
 async function openTrash() {
   openModal('trash-overlay');
+  // Show tip if trash folder is configured but not already a source
+  const trashPath = st.config.trash_folder;
+  const tip = document.getElementById('trash-source-tip');
+  if (tip) {
+    const isSource = (st.config.sources || []).some(s => s.path === trashPath);
+    tip.style.display = (trashPath && !isSource) ? '' : 'none';
+  }
   // Populate restore destination dropdown
   const sel = document.getElementById('trash-restore-dest');
   const all = [

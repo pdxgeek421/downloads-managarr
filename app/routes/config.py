@@ -50,6 +50,7 @@ class AppConfig(BaseModel):
     sources: List[SourceConfig] = []
     destinations: List[DestinationConfig] = []
     trash_folder: Optional[str] = None
+    trash_mode: Optional[str] = None
     extract_temp_folder: Optional[str] = None
     auto_wrap: bool = True
     auto_unwrap: bool = True
@@ -58,6 +59,7 @@ class AppConfig(BaseModel):
     media_types: List[str] = ["tv", "movie", "music", "games"]
     block_mixed_types: bool = True
     type_icons: Dict[str, str] = {}
+    delete_empty_source_folder: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -171,6 +173,10 @@ def get_config() -> dict:
         config["trash_env_managed"] = True
     else:
         config.setdefault("trash_env_managed", False)
+
+    # Default trash_mode to 'auto' if not set
+    if not config.get("trash_mode"):
+        config["trash_mode"] = "auto"
 
     if env_sources or env_dests or env_trash:
         logger.debug(

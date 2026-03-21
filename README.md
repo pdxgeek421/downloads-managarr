@@ -107,56 +107,80 @@ There's no good middle ground. Until you just... build one.
 
 ## Quick Start (Docker)
 
-### 1. Clone
+The image is published to GitHub Container Registry and is the recommended way to run Downloads-Managarr. No clone required.
 
-```bash
-git clone https://github.com/pdxgeek421/downloads-managarr.git /opt/downloads-managarr
-cd /opt/downloads-managarr
-```
-
-### 2. Configure volume mounts
-
-Edit `docker-compose.yml` and uncomment/adjust the volume mounts to match your host paths. Use the same path on both sides of the `:` so what you enter in the Settings UI matches what's on disk:
+### 1. Create a `docker-compose.yml`
 
 ```yaml
-volumes:
-  - /storage/appdata/downloads-managarr:/config
-  - /storage/downloads/completed:/storage/downloads/completed
-  - /storage/media:/storage/media
+services:
+  downloads-managarr:
+    image: ghcr.io/pdxgeek421/downloads-managarr:latest
+    container_name: downloads-managarr
+    restart: unless-stopped
+    ports:
+      - "8181:8080"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - CONFIG_PATH=/config/config.json
+      - DB_PATH=/config/state.db
+      # Optional — remove both to disable the login screen
+      - DL_MANAGARR_ADMIN_USERNAME=youruser
+      - DL_MANAGARR_ADMIN_PASSWORD=yourpassword
+      # Sources and destinations (see Environment Variables section below)
+      # - SOURCE_0_PATH=/data/completed
+      # - DEST_0_PATH=/media/tv
+      # - DEST_0_TYPE=tv
+    volumes:
+      - /storage/appdata/downloads-managarr:/config
+      # Mount your source and destination folders — paths must match what you configure above
+      # - /data/completed:/data/completed
+      # - /media/tv:/media/tv
 ```
 
 > **Important:** The container-side path (right of the `:`) is what you enter in the Settings UI. They must match exactly.
 
-### 3. Add credentials to your `.env`
-
-If you share a `.env` across multiple containers (Sonarr, Radarr, etc.), add these lines:
-
-```env
-DL_MANAGARR_ADMIN_USERNAME=youruser
-DL_MANAGARR_ADMIN_PASSWORD=yourpassword
-```
-
-Leave them out entirely to run without a login screen.
-
-### 4. Build and start
+### 2. Start
 
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
 
-Open **http://localhost:8080** (or whatever host/port you've configured). `config.json`, `state.db`, and `user_prefs.json` are all created automatically on first boot — no manual seeding needed.
+Open **http://your-server:8181** (or whatever port you mapped). `config.json`, `state.db`, and `user_prefs.json` are all created automatically on first boot — no manual seeding needed.
 
 ---
 
 ## Updating
 
 ```bash
+docker compose pull downloads-managarr && docker compose up -d downloads-managarr
+```
+
+All state lives in the mounted `/config` directory and survives updates untouched.
+
+### Building from source
+
+If you prefer to build the image yourself:
+
+```bash
+git clone https://github.com/pdxgeek421/downloads-managarr.git /opt/downloads-managarr
+cd /opt/downloads-managarr
+```
+
+In your `docker-compose.yml`, replace `image:` with `build: .`:
+
+```yaml
+# image: ghcr.io/pdxgeek421/downloads-managarr:latest
+build: .
+```
+
+To update from source:
+
+```bash
 cd /opt/downloads-managarr
 git pull
 docker compose down && docker compose build --no-cache && docker compose up -d
 ```
-
-All state lives in the mounted `/config` directory and survives rebuilds untouched. Hard-refresh your browser (Cmd+Shift+R / Ctrl+Shift+R) after the container comes back up to clear any cached HTML.
 
 ### Troubleshooting update failures
 
@@ -171,7 +195,7 @@ docker compose up -d
 
 **"Port already allocated"**
 
-Something else on the host is bound to the same port (check with `docker ps -a | grep <port>`). If you use a non-default port, make sure your `.env` file is present and sets `DOWNLOADS_MANAGARR_PORT`:
+Something else on the host is bound to the same port (check with `docker ps -a | grep <port>`). Make sure your compose file or `.env` uses a free port:
 
 ```env
 DOWNLOADS_MANAGARR_PORT=8181

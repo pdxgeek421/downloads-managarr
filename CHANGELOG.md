@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **Browser caching of `index.html`** — added `Cache-Control: no-cache` to the index route so browsers always revalidate after an update. Previously, users had to hard-refresh to pick up a new frontend after rebuilding the container.
+
+---
+
 ## [1.2.0] - 2026-03-20 — Auto Trash & Settings Cleanup
 
 ### Changed

@@ -153,10 +153,35 @@ Open **http://localhost:8080** (or whatever host/port you've configured). `confi
 ```bash
 cd /opt/downloads-managarr
 git pull
-docker compose up --build -d
+docker compose down && docker compose build --no-cache && docker compose up -d
 ```
 
-All state lives in `/storage/appdata/downloads-managarr` (the mounted `/config` directory) and survives rebuilds untouched.
+All state lives in the mounted `/config` directory and survives rebuilds untouched. Hard-refresh your browser (Cmd+Shift+R / Ctrl+Shift+R) after the container comes back up to clear any cached HTML.
+
+### Troubleshooting update failures
+
+**"Container name already in use"**
+
+The old container wasn't started by this compose file (e.g. originally run with `docker run`), so `docker compose down` didn't remove it. Force-remove it manually:
+
+```bash
+docker rm -f downloads-managarr
+docker compose up -d
+```
+
+**"Port already allocated"**
+
+Something else on the host is bound to the same port (check with `docker ps -a | grep <port>`). If you use a non-default port, make sure your `.env` file is present and sets `DOWNLOADS_MANAGARR_PORT`:
+
+```env
+DOWNLOADS_MANAGARR_PORT=8181
+```
+
+Then start again:
+
+```bash
+docker compose up -d
+```
 
 ---
 

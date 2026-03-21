@@ -107,9 +107,40 @@ There's no good middle ground. Until you just... build one.
 
 ## Quick Start (Docker)
 
-The image is published to GitHub Container Registry and is the recommended way to run Downloads-Managarr. No clone required.
+The image is published to GitHub Container Registry — no clone required.
 
-### 1. Create a `docker-compose.yml`
+### 1. Create a `.env` file
+
+```env
+# ── System ───────────────────────────────────────────────────────────────────
+PUID=1000
+PGID=1000
+DOWNLOADS_MANAGARR_PORT=8181
+
+# ── Authentication ────────────────────────────────────────────────────────────
+# Remove both to disable the login screen entirely
+DL_MANAGARR_ADMIN_USERNAME=youruser
+DL_MANAGARR_ADMIN_PASSWORD=yourpassword
+
+# ── Sources ───────────────────────────────────────────────────────────────────
+SOURCE_0_PATH=/data/completed
+SOURCE_0_LABEL=Completed
+# SOURCE_1_PATH=/data/usenet/completed
+# SOURCE_1_LABEL=Usenet
+
+# ── Destinations ─────────────────────────────────────────────────────────────
+DEST_0_PATH=/media/tv
+DEST_0_LABEL=TV Shows
+DEST_0_TYPE=tv
+DEST_1_PATH=/media/movies
+DEST_1_LABEL=Movies
+DEST_1_TYPE=movie
+
+# ── Trash ─────────────────────────────────────────────────────────────────────
+# TRASH_FOLDER=/data/trash
+```
+
+### 2. Create a `docker-compose.yml`
 
 ```yaml
 services:
@@ -118,39 +149,55 @@ services:
     container_name: downloads-managarr
     restart: unless-stopped
     ports:
-      - "8181:8080"
+      - "${DOWNLOADS_MANAGARR_PORT:-8080}:8080"
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - CONFIG_PATH=/config/config.json
       - DB_PATH=/config/state.db
-      # Optional — remove both to disable the login screen
-      - DL_MANAGARR_ADMIN_USERNAME=youruser
-      - DL_MANAGARR_ADMIN_PASSWORD=yourpassword
-      # Sources and destinations (see Environment Variables section below)
-      # - SOURCE_0_PATH=/data/completed
-      # - DEST_0_PATH=/media/tv
-      # - DEST_0_TYPE=tv
+      # ── Authentication ──────────────────────────────────────────────────────
+      - DL_MANAGARR_ADMIN_USERNAME=${DL_MANAGARR_ADMIN_USERNAME}
+      - DL_MANAGARR_ADMIN_PASSWORD=${DL_MANAGARR_ADMIN_PASSWORD}
+      # ── Sources ─────────────────────────────────────────────────────────────
+      - SOURCE_0_PATH=${SOURCE_0_PATH}
+      - SOURCE_0_LABEL=${SOURCE_0_LABEL}
+      # - SOURCE_1_PATH=${SOURCE_1_PATH}
+      # - SOURCE_1_LABEL=${SOURCE_1_LABEL}
+      # ── Destinations ────────────────────────────────────────────────────────
+      - DEST_0_PATH=${DEST_0_PATH}
+      - DEST_0_LABEL=${DEST_0_LABEL}
+      - DEST_0_TYPE=${DEST_0_TYPE}
+      - DEST_1_PATH=${DEST_1_PATH}
+      - DEST_1_LABEL=${DEST_1_LABEL}
+      - DEST_1_TYPE=${DEST_1_TYPE}
+      # ── Trash ───────────────────────────────────────────────────────────────
+      # - TRASH_FOLDER=${TRASH_FOLDER}
     volumes:
       - /storage/appdata/downloads-managarr:/config
-      # Mount your source and destination folders — paths must match what you configure above
-      # - /data/completed:/data/completed
-      # - /media/tv:/media/tv
+      # Mount your source and destination folders — container-side paths must
+      # match what you set in SOURCE_n_PATH / DEST_n_PATH above
+      - /data/completed:/data/completed
+      # - /data/usenet/completed:/data/usenet/completed
+      - /media/tv:/media/tv
+      - /media/movies:/media/movies
+      # - /data/trash:/data/trash
 ```
 
 > **Important:** The container-side path (right of the `:`) is what you enter in the Settings UI. They must match exactly.
 
-### 2. Start
+### 3. Start
 
 ```bash
 docker compose up -d
 ```
 
-Open **http://your-server:8181** (or whatever port you mapped). `config.json`, `state.db`, and `user_prefs.json` are all created automatically on first boot — no manual seeding needed.
+Open **http://your-server:8181** (or whatever port you set). `config.json`, `state.db`, and `user_prefs.json` are created automatically on first boot — no manual seeding needed.
 
 ---
 
-## Updating
+## Maintenance
+
+### Updating
 
 ```bash
 docker compose pull downloads-managarr && docker compose up -d downloads-managarr
@@ -160,14 +207,12 @@ All state lives in the mounted `/config` directory and survives updates untouche
 
 ### Building from source
 
-If you prefer to build the image yourself:
+If you prefer to build the image yourself, clone the repo and swap `image:` for `build: .` in your compose file:
 
 ```bash
 git clone https://github.com/pdxgeek421/downloads-managarr.git /opt/downloads-managarr
 cd /opt/downloads-managarr
 ```
-
-In your `docker-compose.yml`, replace `image:` with `build: .`:
 
 ```yaml
 # image: ghcr.io/pdxgeek421/downloads-managarr:latest
@@ -182,7 +227,7 @@ git pull
 docker compose down && docker compose build --no-cache && docker compose up -d
 ```
 
-### Troubleshooting update failures
+### Troubleshooting
 
 **"Container name already in use"**
 
@@ -195,13 +240,7 @@ docker compose up -d
 
 **"Port already allocated"**
 
-Something else on the host is bound to the same port (check with `docker ps -a | grep <port>`). Make sure your compose file or `.env` uses a free port:
-
-```env
-DOWNLOADS_MANAGARR_PORT=8181
-```
-
-Then start again:
+Something else on the host is bound to the same port (check with `docker ps -a | grep <port>`). Update `DOWNLOADS_MANAGARR_PORT` in your `.env` to a free port and restart:
 
 ```bash
 docker compose up -d

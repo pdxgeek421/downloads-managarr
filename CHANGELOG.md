@@ -9,6 +9,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.2] - 2026-03-21 — Login Polish & Desktop Floating Queue
+
+### Added
+- **Settings → Behavior → Floating queue panel (desktop)** — when enabled, the queue slides in as a fixed overlay on desktop (identical to mobile behaviour). The ☰ button opens and closes it; the backdrop and Escape key dismiss it. Off by default, preserving the existing sidebar behaviour.
+
+### Fixed
+- **Login form — no placeholder text** — removed the `admin` username placeholder and `••••••••` password placeholder. Fields are now blank, which is cleaner and avoids implying fixed credentials.
+- **Login password field styling** — `input[type="password"]` now inherits the same dark-surface background, border, and focus styling as text inputs. Browser autofill no longer overrides the field background with white (suppressed via `-webkit-autofill` box-shadow trick).
+
+---
+
 ## [1.3.1] - 2026-03-21 — Mobile & UI Polish
 
 ### Fixed

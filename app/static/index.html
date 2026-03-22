@@ -224,11 +224,17 @@
     .ab-preview { font-size: var(--fz-sm); color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex-shrink: 1; }
     .ab-group { display: flex; align-items: center; gap: 6px; }
     .ab-sep { width: 1px; height: 1.5em; background: var(--border); flex-shrink: 0; }
-    select, input[type="text"] {
+    select, input[type="text"], input[type="password"] {
       background: var(--surface2); border: 1px solid var(--border);
       color: var(--text); padding: 0.38em 0.69em; border-radius: var(--radius); font-size: var(--fz-ui); outline: none;
     }
-    select:focus, input[type="text"]:focus { border-color: var(--accent); }
+    select:focus, input[type="text"]:focus, input[type="password"]:focus { border-color: var(--accent); }
+    /* Suppress browser autofill white-background injection */
+    input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px var(--surface2) inset !important;
+      -webkit-text-fill-color: var(--text) !important;
+      caret-color: var(--text);
+    }
     select { cursor: pointer; }
     .tv-warning { color: var(--warn); font-size: var(--fz-sm); display: flex; align-items: center; gap: 4px; }
     .ab-info-alert { position: relative; display: flex; align-items: center; background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.35); border-radius: var(--radius); padding: 5px 9px; color: var(--warn); cursor: default; }
@@ -512,6 +518,21 @@
       overflow: hidden;
       border-left: none;
     }
+    /* Desktop queue panel floating overlay mode */
+    .queue-panel.desktop-floating {
+      position: fixed !important;
+      right: 0;
+      top: 52px;
+      bottom: 0;
+      z-index: 100;
+      width: min(85vw, 360px) !important;
+      min-width: 260px !important;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      box-shadow: -4px 0 24px rgba(0,0,0,.4);
+      border-left: 1px solid var(--border);
+    }
+    .queue-panel.desktop-floating.desktop-float-open { transform: translateX(0); }
 
     @media (max-width: 768px) {
       /* Hide resize handle on mobile */
@@ -635,11 +656,11 @@
     </div>
     <div class="form-row" style="width:100%;margin-bottom:12px">
       <label>Username</label>
-      <input type="text" id="login-username" class="text-input" autocomplete="username" placeholder="admin" />
+      <input type="text" id="login-username" autocomplete="username" />
     </div>
     <div class="form-row" style="width:100%;margin-bottom:12px">
       <label>Password</label>
-      <input type="password" id="login-password" class="text-input" autocomplete="current-password" placeholder="••••••••" />
+      <input type="password" id="login-password" autocomplete="current-password" />
     </div>
     <label class="login-remember">
       <input type="checkbox" id="login-remember" />
@@ -656,7 +677,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.1</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.2</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -960,6 +981,11 @@
             Show Sources &amp; Destinations by default
           </label>
           <p class="field-note">When enabled, the Sources &amp; Destinations filter bar is expanded when the page loads.</p>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; margin-top:10px;">
+            <input type="checkbox" id="pref-queue-floating" onchange="savePrefs({queue_floating: this.checked}); _applyQueueFloating(this.checked);">
+            Floating queue panel (desktop)
+          </label>
+          <p class="field-note">When enabled, the queue slides in as an overlay on desktop — same behaviour as mobile. The ☰ button toggles it open and closed.</p>
         </div>
         <div class="settings-section">
           <h3>Queue Defaults</h3>
@@ -1711,9 +1737,21 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.2</span>
+          <span class="cl-version-name">Login Polish &amp; Desktop Floating Queue</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Added:</strong> Settings → Behavior → "Floating queue panel (desktop)" — queue slides in as an overlay like mobile, toggled with ☰</li>
+          <li><strong>Fixed:</strong> Login fields no longer show placeholder text (removed "admin" / dots)</li>
+          <li><strong>Fixed:</strong> Password field now matches the username field style; browser autofill no longer turns it white</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.3.1</span>
           <span class="cl-version-name">Mobile &amp; UI Polish</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Fixed:</strong> Sources &amp; Destinations auto-collapses on mobile when you select a file, so all action buttons are always reachable</li>
@@ -2383,6 +2421,7 @@ async function loadPrefs() {
     if (p.folders_first !== undefined) localStorage.setItem('folders-first', p.folders_first);
     st.filterShowUnknown = p.show_unknown !== false;
     _applyFilterBarState(p.src_filter_expanded === false);
+    if (p.queue_floating) _applyQueueFloating(true);
     _applyBadgeVars(p);
   } catch (e) {
     // Server prefs unavailable — st.prefs already holds localStorage fallback values
@@ -4987,15 +5026,49 @@ function switchQueueTab(tab) {
   });
 })();
 
-// ── Queue Panel Toggle (desktop collapse + mobile overlay) ────────────────────
+// ── Queue panel floating mode (desktop overlay) ───────────────────────────────
+function _applyQueueFloating(floating) {
+  const panel    = document.getElementById('queue-panel');
+  const backdrop = document.getElementById('mobile-queue-backdrop');
+  const cb       = document.getElementById('pref-queue-floating');
+  if (cb) cb.checked = !!floating;
+  if (floating) {
+    panel.classList.add('desktop-floating');
+    panel.classList.remove('desktop-hidden');
+    panel.classList.remove('desktop-float-open');
+    if (backdrop) backdrop.style.display = 'none';
+  } else {
+    panel.classList.remove('desktop-floating');
+    panel.classList.remove('desktop-float-open');
+    if (backdrop) backdrop.style.display = 'none';
+    // Restore saved collapse state for sidebar mode
+    if (window.innerWidth > 768 && localStorage.getItem('queuePanelHidden') === '1') {
+      panel.classList.add('desktop-hidden');
+    }
+  }
+}
+
+// ── Queue Panel Toggle (desktop collapse/float + mobile overlay) ──────────────
 function toggleMobileQueue() {
   const panel    = document.getElementById('queue-panel');
   const backdrop = document.getElementById('mobile-queue-backdrop');
 
   if (window.innerWidth > 768) {
-    // Desktop: collapse / expand the sidebar
-    const hidden = panel.classList.toggle('desktop-hidden');
-    localStorage.setItem('queuePanelHidden', hidden ? '1' : '0');
+    if (st.prefs.queue_floating) {
+      // Desktop floating: overlay toggle
+      const isOpen = panel.classList.contains('desktop-float-open');
+      if (isOpen) {
+        panel.classList.remove('desktop-float-open');
+        backdrop.style.display = 'none';
+      } else {
+        panel.classList.add('desktop-float-open');
+        backdrop.style.display = 'block';
+      }
+    } else {
+      // Desktop sidebar: collapse / expand
+      const hidden = panel.classList.toggle('desktop-hidden');
+      localStorage.setItem('queuePanelHidden', hidden ? '1' : '0');
+    }
   } else {
     // Mobile: slide-in overlay
     const isOpen = panel.classList.contains('mobile-open');
@@ -5009,11 +5082,11 @@ function toggleMobileQueue() {
   }
 }
 
-// Close mobile queue on escape
+// Close mobile queue / desktop floating queue on escape
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     const panel = document.getElementById('queue-panel');
-    if (panel.classList.contains('mobile-open')) toggleMobileQueue();
+    if (panel.classList.contains('mobile-open') || panel.classList.contains('desktop-float-open')) toggleMobileQueue();
   }
 });
 

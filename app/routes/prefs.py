@@ -28,6 +28,7 @@ DEFAULT_PREFS: dict = {
     "custom_theme": None,   # {"bg": "#...", "surface": "#...", "text": "#..."}
     "panel_width": None,
     "font_size": 14,
+    "queue_floating": True,
 }
 
 _ALLOWED_KEYS = set(DEFAULT_PREFS.keys())

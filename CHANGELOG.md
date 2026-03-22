@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.6] - 2026-03-22 — Queue Persistence, Progress & Trash Restore
+
+### Fixed
+- **Floating queue mode defaults to on and persists correctly** — `queue_floating` added to server `DEFAULT_PREFS` (so it is now returned and accepted by the prefs API) and mirrored to `localStorage` on every save. Fast-paint on page load reads from `localStorage` so the correct mode is applied before the async prefs response arrives. Previously the key was silently filtered out on every PUT, causing the setting to reset to non-floating on every refresh.
+- **Run Now progress display** — the direct/Run-Now execution path now polls `/api/transfer/progress` every 400 ms while the backend copies, identical to the queue execution path. Individual file transfers now show the live mini progress bar, bytes transferred, and speed; previously the progress modal showed nothing until all operations completed.
+
+### Changed
+- **Trash restore — auto-destination** — removed the "Restore to" dropdown from the Trash panel. Files are now automatically restored to the parent of the `.Trash` folder they live in (e.g. `/media/downloads/.Trash/file.mkv` → `/media/downloads/`). This matches the expected behaviour for both auto trash mode and custom trash mode, and eliminates the need to manually pick a destination each time.
+
+---
+
 ## [1.3.5] - 2026-03-21 — Mobile Action Bar Viewport Fix
 
 ### Fixed

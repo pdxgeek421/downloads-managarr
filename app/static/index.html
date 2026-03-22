@@ -498,9 +498,6 @@
 
     /* Trash modal */
     .trash-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .trash-restore-row { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .trash-restore-row label { font-size: var(--fz-sm); color: var(--text-dim); white-space: nowrap; }
-    .trash-restore-row select { flex: 1; }
     .trash-list { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; }
     .trash-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.62em 12px; }
     .trash-item-icon { font-size: 18px; flex-shrink: 0; }
@@ -678,7 +675,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.5</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.6</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -1317,10 +1314,6 @@
         <a href="#" style="color:var(--accent);margin-left:6px" onclick="closeModal('trash-overlay');openSettings();showSettingsTab('library');return false">Add in Settings →</a>
       </div>
       <div class="trash-toolbar">
-        <div class="trash-restore-row">
-          <label>Restore to:</label>
-          <select id="trash-restore-dest"></select>
-        </div>
         <button class="btn btn-danger btn-sm" onclick="emptyTrash()">Empty Trash</button>
       </div>
       <div class="trash-list" id="trash-list">
@@ -1739,9 +1732,21 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.6</span>
+          <span class="cl-version-name">Queue Persistence, Progress & Trash Restore</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Fixed:</strong> Floating queue mode now defaults to <strong>on</strong> and persists correctly across refreshes — preference mirrored to localStorage so it survives even when server prefs can't be written</li>
+          <li><strong>Fixed:</strong> Run Now (direct) mode now shows live byte-level transfer progress, matching the queue execution experience</li>
+          <li><strong>Changed:</strong> Trash restore no longer asks for a destination — files are automatically restored to the source folder that corresponds to their <code>.Trash</code> location</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.3.5</span>
           <span class="cl-version-name">Mobile Action Bar Viewport Fix</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Fixed:</strong> Action bar hidden behind browser address bar on mobile — switched body height to <code>100dvh</code> (dynamic viewport) so layout tracks the visible area when browser chrome shows/hides</li>
@@ -2424,8 +2429,9 @@ function savePrefs(updates) {
   if (updates.accent        !== undefined) localStorage.setItem('accent',       updates.accent);
   if (updates.custom_accent !== undefined) localStorage.setItem('accent-custom', updates.custom_accent);
   if (updates.custom_theme  !== undefined) localStorage.setItem('custom-theme', JSON.stringify(updates.custom_theme));
-  if (updates.panel_width   !== undefined) localStorage.setItem('queuePanelWidth', updates.panel_width);
-  if (updates.font_size     !== undefined) localStorage.setItem('font-size',       updates.font_size);
+  if (updates.panel_width    !== undefined) localStorage.setItem('queuePanelWidth',  updates.panel_width);
+  if (updates.font_size      !== undefined) localStorage.setItem('font-size',        updates.font_size);
+  if (updates.queue_floating !== undefined) localStorage.setItem('queue-floating',   updates.queue_floating ? '1' : '0');
   // Debounce server save to avoid hammering on rapid changes (e.g. panel drag)
   clearTimeout(_prefsSaveTimer);
   _prefsSaveTimer = setTimeout(() => {
@@ -2453,9 +2459,10 @@ async function loadPrefs() {
     if (p.panel_width)   localStorage.setItem('queuePanelWidth', p.panel_width);
     if (p.font_size)     { setFontSize(p.font_size, true); localStorage.setItem('font-size', p.font_size); }
     if (p.folders_first !== undefined) localStorage.setItem('folders-first', p.folders_first);
+    if (p.queue_floating !== undefined) localStorage.setItem('queue-floating', p.queue_floating ? '1' : '0');
     st.filterShowUnknown = p.show_unknown !== false;
     _applyFilterBarState(p.src_filter_expanded === false);
-    if (p.queue_floating) _applyQueueFloating(true);
+    _applyQueueFloating(!!p.queue_floating);
     _applyBadgeVars(p);
   } catch (e) {
     // Server prefs unavailable — st.prefs already holds localStorage fallback values
@@ -2515,8 +2522,9 @@ const st = {
     custom_accent: localStorage.getItem('accent-custom') || null,
     custom_theme: _lsPrefs || null,
     panel_width:   parseInt(localStorage.getItem('queuePanelWidth')) || null,
-    font_size:     (() => { const v = parseInt(localStorage.getItem('font-size')); return [10,12,14,16,18].includes(v) ? v : 14; })(),
-    folders_first: localStorage.getItem('folders-first') === 'true',
+    font_size:      (() => { const v = parseInt(localStorage.getItem('font-size')); return [10,12,14,16,18].includes(v) ? v : 14; })(),
+    folders_first:  localStorage.getItem('folders-first') === 'true',
+    queue_floating: localStorage.getItem('queue-floating') !== '0',  // default true
     dest_free_show:   true,
     dest_free_format: 'free',
   },
@@ -2748,6 +2756,8 @@ function _applyFilterBarState(collapsed) {
 
 // Default to expanded until loadPrefs() returns server value
 _applyFilterBarState(false);
+// Apply queue floating from localStorage cache before server round-trip
+_applyQueueFloating(localStorage.getItem('queue-floating') !== '0');
 
 function renderSourceFilterButtons() {
   const container = document.getElementById('source-filter-btns');
@@ -3626,26 +3636,35 @@ async function runNow() {
   updateProgressBar();
   openModal('progress-overlay');
 
+  let progressPoller = setInterval(async () => {
+    try {
+      const p = await api('GET', '/api/transfer/progress');
+      if (p.active) updateTransferProgress(p);
+    } catch (_) {}
+  }, 400);
+
   let data;
   try {
     data = await api('POST', '/api/execute/direct', { actions: entries });
   } catch (e) {
+    clearInterval(progressPoller);
     for (const entry of entries) {
       appendProgressResult({ status: 'error', action: entry, message: String(e) });
       st.execDone++;
       updateProgressBar();
     }
-    document.getElementById('progress-current').textContent = '';
+    document.getElementById('progress-current').innerHTML = '';
     finishExecution();
     await loadFiles();
     return;
   }
+  clearInterval(progressPoller);
   for (const result of data.results) {
     appendProgressResult(result);
     st.execDone++;
     updateProgressBar();
   }
-  document.getElementById('progress-current').textContent = '';
+  document.getElementById('progress-current').innerHTML = '';
   finishExecution();
   await loadFiles();
 }
@@ -5142,13 +5161,6 @@ async function openTrash() {
     const isSource = (st.config.sources || []).some(s => s.path === trashPath);
     tip.style.display = (trashPath && !isSource) ? '' : 'none';
   }
-  // Populate restore destination dropdown
-  const sel = document.getElementById('trash-restore-dest');
-  const all = [
-    ...(st.config.sources || []).map(s => ({ ...s, group: 'Source' })),
-    ...(st.config.destinations || []).map(d => ({ ...d, group: 'Destination' })),
-  ];
-  sel.innerHTML = all.map(f => `<option value="${esc(f.path)}">${esc(f.label || f.path)}  (${esc(f.path)})</option>`).join('');
   await loadTrash();
 }
 
@@ -5226,9 +5238,7 @@ function onTrashClick(e) {
 }
 
 async function restoreTrashItem(path) {
-  const destination = document.getElementById('trash-restore-dest').value;
-  if (!destination) { alert('Select a restore destination first.'); return; }
-  const res = await api('POST', '/api/trash/restore', { path, destination });
+  const res = await api('POST', '/api/trash/restore', { path });
   if (res.status === 'ok') { await loadTrash(); await loadFiles(); loadHistory(); }
   else alert('Restore failed: ' + res.message);
 }

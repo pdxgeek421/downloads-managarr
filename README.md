@@ -59,7 +59,7 @@ There's no good middle ground. Until you just... build one.
 - **Three trash modes** — Off (disabled), Auto (creates `.Trash` beside the source file automatically — default), or Custom (explicit path)
 - **Move to Trash** — soft-delete to the configured/auto trash location (reversible)
 - **Permanent Delete** — confirmation-gated, no takebacks
-- Dedicated **Trash panel** — browse, restore (with auto-rename on collision), or permanently delete individual items
+- Dedicated **Trash panel** — browse, restore, or permanently delete individual items; restore automatically returns files to the source folder corresponding to their `.Trash` location (no destination picker needed)
 - **Empty Trash** to clear everything at once
 
 ### History Log
@@ -101,11 +101,12 @@ There's no good middle ground. Until you just... build one.
 ### Queue Panel
 - **☰ toggle button** always visible in the header — collapses/expands the queue sidebar on desktop; opens the slide-in overlay on mobile
 - **⧉ floating mode toggle** in the queue panel header — switches the queue between a docked sidebar and a floating overlay (like mobile) on desktop; highlights in accent colour when active; syncs with Settings → Behavior
-- **Floating queue** can also be enabled permanently in Settings → Behavior → "Floating queue panel (desktop)"
+- **Floating queue defaults to on** — preference persists across refreshes via localStorage and server-side prefs
 - Queue item count badge on the ☰ button whenever items are staged
 
 ### Real-Time Transfer Progress
 - While a cross-filesystem copy or move is in progress, the execution modal shows a live mini progress bar with bytes transferred / total and current speed (e.g. `1.2 GB / 4.5 GB · 320 MB/s`)
+- Progress shown for both **Run Now** (direct) and **Run Queue** modes
 - Same-filesystem moves are instant (`os.rename`) and show no byte-level progress
 
 ### Mobile / Responsive

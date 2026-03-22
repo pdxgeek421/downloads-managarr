@@ -139,15 +139,28 @@ async def list_trash():
     return await asyncio.to_thread(_scan_trash_dir, trash)
 
 
+def _restore_destination(path: str) -> str:
+    """
+    Derive the restore destination from an item's trash path.
+
+    The item lives at <source>/.Trash/<name> (auto mode) or
+    <trash_folder>/<name> (custom mode).  In both cases the parent of the
+    containing folder is the appropriate restore target.
+    """
+    trash_dir = os.path.dirname(os.path.normpath(path))
+    return os.path.dirname(trash_dir)
+
+
 @router.post("/trash/restore")
 async def restore_from_trash(body: dict = Body(...)):
     path = body.get("path")
-    destination = body.get("destination")
 
     if not path or not os.path.exists(path):
         return {"status": "error", "message": "Item not found in trash"}
+
+    destination = _restore_destination(path)
     if not destination:
-        return {"status": "error", "message": "No destination provided"}
+        return {"status": "error", "message": "Could not determine restore destination"}
 
     config = get_config()
     days = config.get("history_days", 30)

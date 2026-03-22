@@ -27,7 +27,7 @@ There's no good middle ground. Until you just... build one.
 - Drag-to-reorder queued items
 - **Run Queue** — processes all items in sequence
 - **Run Now** — execute the current selection immediately, bypassing the queue
-- **Clear Queue** — discard everything pending
+- **Clear** — discard everything pending
 
 ### Smart Destinations
 - Separate destination sections per media type (TV, Movie, Music, etc.)
@@ -76,6 +76,7 @@ There's no good middle ground. Until you just... build one.
 
 ### Authentication (optional)
 - Set `DL_MANAGARR_ADMIN_USERNAME` and `DL_MANAGARR_ADMIN_PASSWORD` in your environment to enable a login screen
+- Clean login form — no placeholder credentials shown; both fields match the app's dark theme including when browser autofill is active
 - Session-based auth with an `httponly` cookie — 30 days with *Keep me logged in*, 24 hours otherwise
 - All `/api/*` routes are protected when auth is enabled; auth endpoints are always public
 - Omit the env vars entirely to run with no login — behaves exactly as before
@@ -99,6 +100,8 @@ There's no good middle ground. Until you just... build one.
 
 ### Queue Panel
 - **☰ toggle button** always visible in the header — collapses/expands the queue sidebar on desktop; opens the slide-in overlay on mobile
+- **⧉ floating mode toggle** in the queue panel header — switches the queue between a docked sidebar and a floating overlay (like mobile) on desktop; highlights in accent colour when active; syncs with Settings → Behavior
+- **Floating queue** can also be enabled permanently in Settings → Behavior → "Floating queue panel (desktop)"
 - Queue item count badge on the ☰ button whenever items are staged
 
 ### Real-Time Transfer Progress

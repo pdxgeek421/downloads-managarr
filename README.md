@@ -110,6 +110,7 @@ There's no good middle ground. Until you just... build one.
 
 ### Mobile / Responsive
 - At ≤768px the queue panel becomes a slide-in overlay toggled by the ☰ header button; shows live queue count
+- Action bar always visible at the bottom — uses `100dvh` so the layout tracks the actual visible area as the browser address bar shows/hides; bottom padding accounts for iOS home indicator and Android gesture bar
 - Action bar buttons (Add to Queue / Run Now / Clear) always reachable on small screens — file list shrinks to make room
 - Modals become bottom sheets; settings nav collapses to a horizontal scrollable tab bar
 - Table columns reduce on smaller screens (Source/Modified hidden at 768px; Type/Size hidden at 480px)

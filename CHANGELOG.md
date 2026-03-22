@@ -5,7 +5,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-## [Unreleased]
+## [1.3.5] - 2026-03-21 — Mobile Action Bar Viewport Fix
+
+### Fixed
+- **Action bar hidden by mobile browser chrome** — changed `body` height from `100vh` to `100dvh` (dynamic viewport height) so the layout adapts when the browser address bar shows or hides. `100vh` on iOS/Android equals the *large* viewport (chrome hidden), so when the address bar was visible the body overflowed below the visible area and the action bar was swallowed by the browser navigation bar.
+- **Action bar obscured by iOS home indicator / Android gesture bar** — added `env(safe-area-inset-bottom)` to the action bar's bottom padding (both base and mobile breakpoint) so content is never physically covered by system UI.
+- **Safe-area insets enabled** — added `viewport-fit=cover` to the `<meta name="viewport">` tag, which is required for `env(safe-area-inset-bottom)` to return a non-zero value on notched/home-bar devices.
 
 ---
 

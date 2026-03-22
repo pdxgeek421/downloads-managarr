@@ -9,6 +9,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.3] - 2026-03-21 — Queue Header Tweaks
+
+### Added
+- **Queue close button (✕)** — a close button now sits in the queue panel header. Collapses the sidebar on desktop, closes the overlay on mobile or in floating mode.
+
+### Changed
+- **"Clear Queue" → "Clear"** — button label shortened; the context is obvious from its position in the queue header.
+
+---
+
 ## [1.3.2] - 2026-03-21 — Login Polish & Desktop Floating Queue
 
 ### Added

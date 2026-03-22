@@ -9,6 +9,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.4] - 2026-03-21 — Docs & README Sync
+
+### Changed
+- **README** updated to reflect all v1.3.x changes: floating queue mode, ⧉ header toggle, clean login form, and "Clear Queue" → "Clear".
+
+---
+
 ## [1.3.3] - 2026-03-21 — Queue Header Tweaks
 
 ### Added

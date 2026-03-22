@@ -125,10 +125,10 @@
     .toolbar-section-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim); white-space: nowrap; }
     .toolbar-filter-group .type-filter-btns { display: flex; flex-wrap: wrap; gap: 6px; }
     .toolbar-toggle-bar {
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-      padding: 3px 14px; cursor: pointer; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: flex-start; gap: 5px;
+      padding: 8px 14px; cursor: pointer; font-size: 12px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim);
-      border-bottom: 1px solid var(--border); user-select: none;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); user-select: none;
       transition: color .15s, background .15s;
     }
     .toolbar-toggle-bar:hover { color: var(--text); background: var(--surface2); }
@@ -147,7 +147,7 @@
     .filter-sep { width: 1px; height: 1.5em; background: var(--border); margin: 0 4px; align-self: center; }
 
     /* ── File Table ── */
-    .file-list-wrap { flex: 1; overflow-y: auto; }
+    .file-list-wrap { flex: 1; overflow-y: auto; min-height: 0; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
       position: sticky; top: 0;
@@ -505,9 +505,16 @@
     .trash-empty-msg { text-align: center; color: var(--text-dim); padding: 40px 0; font-size: var(--font-size-base); }
 
     /* ── Mobile / Responsive ──────────────────────────────────────────────── */
+    /* Desktop queue panel collapsed state */
+    .queue-panel.desktop-hidden {
+      width: 0 !important;
+      min-width: 0 !important;
+      overflow: hidden;
+      border-left: none;
+    }
+
     @media (max-width: 768px) {
-      /* Show mobile queue toggle, hide resize handle */
-      #mobile-queue-btn { display: flex !important; }
+      /* Hide resize handle on mobile */
       .queue-resize-handle { display: none; }
 
       /* Queue panel slides in as a fixed overlay */
@@ -598,8 +605,9 @@
       /* Action bar */
       .ab-row .label { font-size: var(--fz-sm); }
       #action-bar { padding: 0.46em 10px 0.62em; }
-      .ab-bottom { flex-wrap: wrap; align-items: center; }
-      .ab-preview { width: 100%; white-space: normal; overflow: visible; text-overflow: clip; margin-bottom: 4px; }
+      .ab-bottom { flex-wrap: nowrap; align-items: center; }
+      /* Hide the action preview text on small screens — buttons are what matter */
+      .ab-preview { display: none; }
 
       /* Source/Dest items: single row on mobile */
       .source-item { flex-wrap: nowrap; }
@@ -647,7 +655,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.2.0</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.0</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -661,7 +669,7 @@
       <button class="header-dropdown-item" id="logout-btn" onclick="logout()" style="display:none"><span class="hdi-icon">⏏</span>Logout</button>
     </div>
   </div>
-  <button class="btn btn-ghost btn-icon" id="mobile-queue-btn" onclick="toggleMobileQueue()" title="Queue" style="display:none;position:relative;font-size:16px">☰<span class="count-bubble" id="mobile-queue-badge" style="display:none"></span></button>
+  <button class="btn btn-ghost btn-icon" id="mobile-queue-btn" onclick="toggleMobileQueue()" title="Toggle queue" style="position:relative;font-size:16px">☰<span class="count-bubble" id="mobile-queue-badge" style="display:none"></span></button>
 </header>
 
 <!-- Mobile queue backdrop -->
@@ -675,11 +683,22 @@
 
     <!-- Toolbar -->
     <div class="file-toolbar">
+      <!-- Row 1: All|Files|Folders · Filter input · count · refresh -->
+      <div class="toolbar-row toolbar-row-controls">
+        <button class="type-filter-btn active" id="tfb-all"    onclick="setAllFilter()">All</button>
+        <button class="type-filter-btn"        id="tfb-file"   onclick="setFileTypeFilter('file')">Files</button>
+        <button class="type-filter-btn"        id="tfb-folder" onclick="setFileTypeFilter('folder')">Folders</button>
+        <button class="type-filter-btn"        id="tfb-hide-unknown" onclick="toggleHideUnknown()" title="Toggle unrecognized files">❓</button>
+        <input class="filter-input" id="filter-input" type="search" placeholder="🔍 Filter…" oninput="applyFilter()">
+        <div style="flex:1"></div>
+        <span class="toolbar-count" id="file-count">Loading…</span>
+        <button class="btn btn-ghost btn-icon" onclick="refreshFiles()" title="Refresh" style="width:32px;height:32px;padding:0;flex-shrink:0"><span style="font-size:1.75em;line-height:1;font-weight:300">↻</span></button>
+      </div>
       <!-- Toggle bar: click to show/hide the sources/destinations row -->
       <div class="toolbar-toggle-bar" id="toolbar-toggle-bar" onclick="toggleFilterBar()">
-        <span id="toolbar-toggle-label">▼ Sources &amp; Destinations</span>
+        <span id="toolbar-toggle-label">▶ Sources &amp; Destinations</span>
       </div>
-      <!-- Row 1: Source + Destination filter buttons -->
+      <!-- Row 2: Source + Destination filter buttons -->
       <div class="toolbar-row toolbar-row-types" id="toolbar-row-types">
         <div class="toolbar-filter-group" id="types-filter-sources">
           <span class="toolbar-section-label">Sources</span>
@@ -690,17 +709,6 @@
           <span class="toolbar-section-label">Destinations</span>
           <div class="type-filter-btns"><span id="content-type-filter-btns" style="display:contents"></span></div>
         </div>
-      </div>
-      <!-- Row 2: All|Files|Folders · Filter input · count · refresh -->
-      <div class="toolbar-row toolbar-row-controls">
-        <button class="type-filter-btn active" id="tfb-all"    onclick="setAllFilter()">All</button>
-        <button class="type-filter-btn"        id="tfb-file"   onclick="setFileTypeFilter('file')">Files</button>
-        <button class="type-filter-btn"        id="tfb-folder" onclick="setFileTypeFilter('folder')">Folders</button>
-        <button class="type-filter-btn"        id="tfb-hide-unknown" onclick="toggleHideUnknown()" title="Toggle unrecognized files">❓</button>
-        <input class="filter-input" id="filter-input" type="search" placeholder="🔍 Filter…" oninput="applyFilter()">
-        <div style="flex:1"></div>
-        <span class="toolbar-count" id="file-count">Loading…</span>
-        <button class="btn btn-ghost btn-icon" onclick="refreshFiles()" title="Refresh" style="width:32px;height:32px;padding:0;flex-shrink:0"><span style="font-size:1.75em;line-height:1;font-weight:300">↻</span></button>
       </div>
     </div>
 
@@ -944,6 +952,14 @@
 
       <!-- Behavior -->
       <div class="settings-pane" id="settings-tab-behavior">
+        <div class="settings-section">
+          <h3>File Browser</h3>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;">
+            <input type="checkbox" id="pref-src-filter-expanded" onchange="savePrefs({src_filter_expanded: this.checked}); _applyFilterBarState(!this.checked);">
+            Show Sources &amp; Destinations by default
+          </label>
+          <p class="field-note">When enabled, the Sources &amp; Destinations filter bar is expanded when the page loads.</p>
+        </div>
         <div class="settings-section">
           <h3>Queue Defaults</h3>
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;">
@@ -1588,6 +1604,13 @@
         <div class="help-section">
           <h3>Behavior</h3>
           <div class="help-feature">
+            <div class="help-feature-icon">📂</div>
+            <div class="help-feature-body">
+              <div class="help-feature-title">File Browser</div>
+              <p class="help-feature-desc"><em>Show Sources &amp; Destinations by default</em> — controls whether the collapsible Sources &amp; Destinations bar is expanded when the page loads. Saved per user.</p>
+            </div>
+          </div>
+          <div class="help-feature">
             <div class="help-feature-icon">📋</div>
             <div class="help-feature-body">
               <div class="help-feature-title">Queue Defaults</div>
@@ -1687,9 +1710,24 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.0</span>
+          <span class="cl-version-name">Queue Toggle, Live Transfer Progress &amp; Toolbar Polish</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Added:</strong> ☰ queue toggle always visible in header — collapses/expands the sidebar on desktop; mobile overlay behaviour unchanged</li>
+          <li><strong>Added:</strong> Live transfer progress — bytes transferred, total, and speed shown while a file is copying</li>
+          <li><strong>Added:</strong> Settings → Behavior → "Show Sources &amp; Destinations by default" toggle</li>
+          <li><strong>Changed:</strong> Toolbar reordered — All / Files / Folders + search is now the top row; Sources &amp; Destinations toggle below it</li>
+          <li><strong>Changed:</strong> Sources &amp; Destinations toggle is left-aligned, taller, with visible top and bottom borders</li>
+          <li><strong>Fixed:</strong> Mobile action bar buttons (Add to Queue / Run Now / Clear) no longer clipped off the bottom of the screen</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.2.0</span>
           <span class="cl-version-name">Auto Trash &amp; Settings Cleanup</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Fixed:</strong> Auto trash mode fully functional — Trash panel correctly lists, deletes, and empties items from <code>.Trash</code> folders co-located with source files</li>
@@ -2331,6 +2369,7 @@ async function loadPrefs() {
     if (p.font_size)     { setFontSize(p.font_size, true); localStorage.setItem('font-size', p.font_size); }
     if (p.folders_first !== undefined) localStorage.setItem('folders-first', p.folders_first);
     st.filterShowUnknown = p.show_unknown !== false;
+    _applyFilterBarState(p.src_filter_expanded === false);
     _applyBadgeVars(p);
   } catch (e) {
     // Server prefs unavailable — st.prefs already holds localStorage fallback values
@@ -2605,10 +2644,11 @@ function applyFilter() {
 
 // ── Filter bar toggle (Sources/Destinations row) ──────────────────────────────
 function toggleFilterBar() {
-  const collapsed = localStorage.getItem('srcFilterCollapsed') === 'true';
-  const newState = !collapsed;
-  localStorage.setItem('srcFilterCollapsed', newState);
-  _applyFilterBarState(newState);
+  // src_filter_expanded: true = shown (default), false = hidden
+  const currentExpanded = st.prefs.src_filter_expanded !== false;
+  const newExpanded = !currentExpanded;
+  savePrefs({ src_filter_expanded: newExpanded });
+  _applyFilterBarState(!newExpanded);
 }
 
 function _applyFilterBarState(collapsed) {
@@ -2616,13 +2656,12 @@ function _applyFilterBarState(collapsed) {
   const label = document.getElementById('toolbar-toggle-label');
   if (row)   row.style.display   = collapsed ? 'none' : '';
   if (label) label.innerHTML     = collapsed ? '▶ Sources &amp; Destinations' : '▼ Sources &amp; Destinations';
+  const cb = document.getElementById('pref-src-filter-expanded');
+  if (cb) cb.checked = !collapsed;
 }
 
-// Restore collapse state on page load (called after DOM is ready)
-(function() {
-  const collapsed = localStorage.getItem('srcFilterCollapsed') === 'true';
-  _applyFilterBarState(collapsed);
-})();
+// Default to expanded until loadPrefs() returns server value
+_applyFilterBarState(false);
 
 function renderSourceFilterButtons() {
   const container = document.getElementById('source-filter-btns');
@@ -3847,16 +3886,28 @@ async function runNextItem(conflictResolution) {
   document.getElementById('progress-current').innerHTML =
     `<span class="spinner"></span>&nbsp; ${esc(currentItem.summary)}`;
 
+  // Poll transfer progress while the backend is copying
+  let progressPoller = setInterval(async () => {
+    try {
+      const p = await api('GET', '/api/transfer/progress');
+      if (p.active) updateTransferProgress(p);
+    } catch (_) {}
+  }, 400);
+
   let data;
   try {
     data = await api('POST', '/api/execute/next', { conflict_resolution: conflictResolution });
   } catch (e) {
+    clearInterval(progressPoller);
+    document.getElementById('progress-current').innerHTML = '';
     appendProgressResult({ status: 'error', action: currentItem, message: String(e) });
     st.execDone += 2;  // consume both steps on error
     updateProgressBar();
     runNextItem(null);
     return;
   }
+  clearInterval(progressPoller);
+  document.getElementById('progress-current').innerHTML = '';
 
   if (data.status === 'conflict') {
     const resolution = await showConflictDialog(data.conflict);
@@ -3894,6 +3945,24 @@ function updateProgressBar() {
   const itemsTotal = st._execMode === 'queue' ? Math.floor(st.execTotal / 2) : st.execTotal;
   document.getElementById('progress-fraction').textContent = `${itemsDone} / ${itemsTotal}`;
   document.getElementById('progress-label-text').textContent = st.execDone < st.execTotal ? 'Running…' : 'Complete';
+}
+
+function updateTransferProgress(p) {
+  if (!p.active) return;
+  const pct   = p.bytes_total > 0 ? Math.round(p.bytes_transferred / p.bytes_total * 100) : 0;
+  const xfer  = fmtBytes(p.bytes_transferred);
+  const total = p.bytes_total > 0 ? fmtBytes(p.bytes_total) : '?';
+  const speed = p.speed_bps > 0 ? fmtBytes(p.speed_bps) + '/s' : '';
+  document.getElementById('progress-current').innerHTML = `
+    <div style="margin-bottom:4px">
+      <span class="spinner"></span>&nbsp;
+      <span style="color:var(--text);font-size:var(--fz-sm)">${esc(p.file_name)}</span>
+    </div>
+    <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:4px">
+      <div style="height:100%;background:var(--accent);border-radius:2px;width:${pct}%;transition:width .35s"></div>
+    </div>
+    <span style="font-size:11px;color:var(--text-dim)">${xfer} / ${total}${speed ? ' &middot; ' + speed : ''}</span>
+  `;
 }
 
 function appendProgressResult(data) {
@@ -4866,6 +4935,11 @@ function switchQueueTab(tab) {
   const saved = localStorage.getItem('queuePanelWidth');
   if (saved && window.innerWidth > 768) panel.style.width = saved + 'px';
 
+  // Restore collapsed state (desktop only)
+  if (window.innerWidth > 768 && localStorage.getItem('queuePanelHidden') === '1') {
+    panel.classList.add('desktop-hidden');
+  }
+
   let startX, startW;
   handle.addEventListener('mousedown', e => {
     startX = e.clientX;
@@ -4892,17 +4966,25 @@ function switchQueueTab(tab) {
   });
 })();
 
-// ── Mobile Queue Panel ────────────────────────────────────────────────────────
+// ── Queue Panel Toggle (desktop collapse + mobile overlay) ────────────────────
 function toggleMobileQueue() {
   const panel    = document.getElementById('queue-panel');
   const backdrop = document.getElementById('mobile-queue-backdrop');
-  const isOpen   = panel.classList.contains('mobile-open');
-  if (isOpen) {
-    panel.classList.remove('mobile-open');
-    backdrop.style.display = 'none';
+
+  if (window.innerWidth > 768) {
+    // Desktop: collapse / expand the sidebar
+    const hidden = panel.classList.toggle('desktop-hidden');
+    localStorage.setItem('queuePanelHidden', hidden ? '1' : '0');
   } else {
-    panel.classList.add('mobile-open');
-    backdrop.style.display = 'block';
+    // Mobile: slide-in overlay
+    const isOpen = panel.classList.contains('mobile-open');
+    if (isOpen) {
+      panel.classList.remove('mobile-open');
+      backdrop.style.display = 'none';
+    } else {
+      panel.classList.add('mobile-open');
+      backdrop.style.display = 'block';
+    }
   }
 }
 

@@ -94,11 +94,20 @@ There's no good middle ground. Until you just... build one.
 - **Panel width:** drag the resize handle on the queue sidebar; size is remembered
 
 ### File-List Toolbar
-- **Top row** — Sources & Destinations filter buttons (collapsible) with free-space labels per destination
-- **Bottom row** — All / Files / Folders filter buttons, text filter input, ❓ toggle for unrecognized files, item count, and refresh
+- **Top row** — All / Files / Folders filter buttons, text filter input, ❓ toggle for unrecognized files, item count, and refresh (always visible)
+- **Collapsible Sources & Destinations** — toggle bar below the controls row expands/collapses source and destination filter buttons with free-space labels; default state configurable in Settings → Behavior
+
+### Queue Panel
+- **☰ toggle button** always visible in the header — collapses/expands the queue sidebar on desktop; opens the slide-in overlay on mobile
+- Queue item count badge on the ☰ button whenever items are staged
+
+### Real-Time Transfer Progress
+- While a cross-filesystem copy or move is in progress, the execution modal shows a live mini progress bar with bytes transferred / total and current speed (e.g. `1.2 GB / 4.5 GB · 320 MB/s`)
+- Same-filesystem moves are instant (`os.rename`) and show no byte-level progress
 
 ### Mobile / Responsive
-- At ≤768px the queue panel becomes a slide-in overlay toggled by a ☰ button in the header; shows live queue count
+- At ≤768px the queue panel becomes a slide-in overlay toggled by the ☰ header button; shows live queue count
+- Action bar buttons (Add to Queue / Run Now / Clear) always reachable on small screens — file list shrinks to make room
 - Modals become bottom sheets; settings nav collapses to a horizontal scrollable tab bar
 - Table columns reduce on smaller screens (Source/Modified hidden at 768px; Type/Size hidden at 480px)
 - Action bar warning tooltip is tap-to-show on mobile and uses `position: fixed` so it never goes off-screen
@@ -393,6 +402,7 @@ All routes are prefixed with `/api`. When auth is enabled, all routes except `/a
 | `POST` | `/api/execute` | Execute all queued items |
 | `POST` | `/api/execute/next` | Execute next queue item (returns conflict info if blocked) |
 | `POST` | `/api/execute/direct` | Execute actions immediately without touching the queue |
+| `GET` | `/api/transfer/progress` | Current file-transfer progress (bytes transferred, total, speed in bytes/s, active flag) |
 
 #### Conflict resolution (`/api/execute/next`)
 

@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from app.routes.config import get_config
 from app.routes.history import append_history, get_history_raw
 from app.routes.queue import get_queue, pop_first_item_by_id, save_queue
-from app.services.executor import ConflictError, execute_action, atomic_move, verify_transfer
+from app.services.executor import ConflictError, execute_action, atomic_move, verify_transfer, get_transfer_progress
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -139,6 +139,12 @@ class ExecuteRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Execute routes
 # ---------------------------------------------------------------------------
+
+@router.get("/transfer/progress")
+async def transfer_progress():
+    """Return current file-transfer progress for the frontend to poll."""
+    return get_transfer_progress()
+
 
 @router.post("/execute")
 async def execute_queue(body: Optional[ExecuteRequest] = None):

@@ -7,7 +7,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+---
+
+## [1.3.0] - 2026-03-21 — Queue Toggle, Live Transfer Progress & Toolbar Polish
+
+### Added
+- **Desktop queue toggle** — the ☰ queue button is now always visible in the header on all screen sizes. On desktop it collapses and expands the queue sidebar (state saved in `localStorage`); on mobile it keeps the existing slide-in overlay behaviour. Previously the button was hidden on desktop entirely.
+- **Real-time transfer progress** — while a file is being copied or moved across filesystems, the progress modal now shows a live mini progress bar, bytes transferred / total, and current transfer speed (MB/s). The backend streams progress through a new `GET /api/transfer/progress` endpoint polled every 400 ms by the frontend. Same-filesystem moves (`os.rename`) are instant and show no byte-level progress. Directory copies show per-file progress with aggregate bytes.
+- **Settings → Behavior → File Browser** — new section with a "Show Sources & Destinations by default" toggle. Controls whether the collapsible Sources & Destinations bar is expanded or collapsed when the page loads. Saved server-side with the rest of user preferences so it roams across browsers.
+
+### Changed
+- **Toolbar layout — Sources & Destinations moved below controls** — the All / Files / Folders filter buttons and search input row is now the first row in the toolbar (always visible). The collapsible Sources & Destinations toggle bar sits below it, with the expandable filter buttons beneath that. This puts the most-used controls at the top.
+- **Sources & Destinations toggle styling** — toggle bar is now left-aligned, taller (8 px vertical padding), larger text (12 px), and has a visible top and bottom border to clearly separate it from the rows above and below.
+
 ### Fixed
+- **Mobile action bar buttons clipped** — on small screens the "Add to Queue", "Run Now", and "Clear" buttons were cut off below the viewport. Fixed by adding `min-height: 0` to the file list container so it can shrink and give the action bar the space it needs. On ≤480 px screens the action preview text is hidden and the buttons row stays on a single non-wrapping line so all three buttons are always reachable.
 - **Browser caching of `index.html`** — added `Cache-Control: no-cache` to the index route so browsers always revalidate after an update. Previously, users had to hard-refresh to pick up a new frontend after rebuilding the container.
 
 ---

@@ -33,6 +33,8 @@ import errno
 import logging
 import os
 import shutil
+import threading
+import time
 from typing import Optional
 
 from app.services.extractor import extract_archive
@@ -40,6 +42,87 @@ from app.services.extractor import extract_archive
 logger = logging.getLogger(__name__)
 
 TMP_SUFFIX = ".managarr.tmp"
+
+# ---------------------------------------------------------------------------
+# Transfer progress tracking (updated from the copy thread, read by the API)
+# ---------------------------------------------------------------------------
+
+_progress_lock = threading.Lock()
+_transfer_progress: dict = {
+    "active": False,
+    "bytes_transferred": 0,
+    "bytes_total": 0,
+    "file_name": "",
+    "started_at": 0.0,
+}
+
+
+def get_transfer_progress() -> dict:
+    """Return a snapshot of the current transfer progress (thread-safe)."""
+    with _progress_lock:
+        p = dict(_transfer_progress)
+    if p["active"] and p["started_at"] > 0 and p["bytes_transferred"] > 0:
+        elapsed = time.monotonic() - p["started_at"]
+        p["speed_bps"] = p["bytes_transferred"] / elapsed if elapsed > 0 else 0
+    else:
+        p["speed_bps"] = 0
+    return p
+
+
+def _dir_size(path: str) -> int:
+    """Return total byte size of all files under *path*."""
+    total = 0
+    for dirpath, _, files in os.walk(path):
+        for f in files:
+            try:
+                total += os.path.getsize(os.path.join(dirpath, f))
+            except OSError:
+                pass
+    return total
+
+
+_BUF = 1024 * 1024  # 1 MiB copy buffer
+
+
+def _progress_copy_fn(src: str, dst: str) -> None:
+    """shutil.copy2 replacement used by copytree — tracks per-chunk progress."""
+    with _progress_lock:
+        _transfer_progress["file_name"] = os.path.basename(src)
+    with open(src, "rb") as fi, open(dst, "wb") as fo:
+        while True:
+            chunk = fi.read(_BUF)
+            if not chunk:
+                break
+            fo.write(chunk)
+            with _progress_lock:
+                _transfer_progress["bytes_transferred"] += len(chunk)
+    shutil.copystat(src, dst)
+
+
+def _copy_file_with_progress(src: str, dst: str) -> None:
+    """Copy a single file tracking byte-level progress."""
+    file_size = os.path.getsize(src)
+    with _progress_lock:
+        _transfer_progress.update({
+            "active": True,
+            "bytes_transferred": 0,
+            "bytes_total": file_size,
+            "file_name": os.path.basename(src),
+            "started_at": time.monotonic(),
+        })
+    try:
+        with open(src, "rb") as fi, open(dst, "wb") as fo:
+            while True:
+                chunk = fi.read(_BUF)
+                if not chunk:
+                    break
+                fo.write(chunk)
+                with _progress_lock:
+                    _transfer_progress["bytes_transferred"] += len(chunk)
+        shutil.copystat(src, dst)
+    finally:
+        with _progress_lock:
+            _transfer_progress["active"] = False
 
 
 class ConflictError(Exception):
@@ -108,16 +191,30 @@ def atomic_copy(source: str, final_dest: str) -> None:
     Copies to ``final_dest + TMP_SUFFIX`` first (same directory → same
     filesystem as the target), then atomically renames to *final_dest*.
     Cleans up the tmp path on any error so the destination is never left in a
-    partial state.
+    partial state.  Progress is tracked in ``_transfer_progress`` so the
+    frontend can poll ``/api/transfer/progress`` for live bytes/speed data.
     """
     tmp = final_dest + TMP_SUFFIX
     # Remove any leftover tmp from a previous failed transfer
     _cleanup_tmp(tmp)
     try:
         if os.path.isdir(source):
-            shutil.copytree(source, tmp)
+            total = _dir_size(source)
+            with _progress_lock:
+                _transfer_progress.update({
+                    "active": True,
+                    "bytes_transferred": 0,
+                    "bytes_total": total,
+                    "file_name": os.path.basename(source) + "/",
+                    "started_at": time.monotonic(),
+                })
+            try:
+                shutil.copytree(source, tmp, copy_function=_progress_copy_fn)
+            finally:
+                with _progress_lock:
+                    _transfer_progress["active"] = False
         else:
-            shutil.copy2(source, tmp)
+            _copy_file_with_progress(source, tmp)
         os.replace(tmp, final_dest)          # atomic on POSIX, same-fs rename
     except Exception:
         _cleanup_tmp(tmp)

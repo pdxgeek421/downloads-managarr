@@ -909,7 +909,7 @@
         <button class="queue-tab"        id="qtab-history" onclick="switchQueueTab('history')">History</button>
       </div>
       <button class="btn btn-ghost btn-sm" id="qpanel-clear-btn" onclick="clearQueue()">Clear</button>
-      <button class="btn btn-ghost btn-sm" onclick="toggleMobileQueue()" title="Close panel" style="padding:0 7px;font-size:16px;line-height:1">✕</button>
+      <button class="btn btn-ghost btn-sm" id="qpanel-float-btn" onclick="_toggleQueueFloating()" title="Toggle floating panel" style="padding:0 7px;font-size:15px;line-height:1">⧉</button>
     </div>
 
     <!-- Queue view -->
@@ -1743,7 +1743,7 @@
           <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
-          <li><strong>Added:</strong> ✕ close button in the queue panel header — collapses sidebar on desktop, dismisses overlay on mobile/floating mode</li>
+          <li><strong>Added:</strong> ⧉ floating mode toggle in the queue panel header — one click switches between docked sidebar and floating overlay; highlights when active</li>
           <li><strong>Changed:</strong> "Clear Queue" button shortened to "Clear"</li>
         </ul>
       </div>
@@ -5043,7 +5043,9 @@ function _applyQueueFloating(floating) {
   const panel    = document.getElementById('queue-panel');
   const backdrop = document.getElementById('mobile-queue-backdrop');
   const cb       = document.getElementById('pref-queue-floating');
-  if (cb) cb.checked = !!floating;
+  const btn      = document.getElementById('qpanel-float-btn');
+  if (cb)  cb.checked    = !!floating;
+  if (btn) btn.style.color = floating ? 'var(--accent)' : '';
   if (floating) {
     panel.classList.add('desktop-floating');
     panel.classList.remove('desktop-hidden');
@@ -5058,6 +5060,12 @@ function _applyQueueFloating(floating) {
       panel.classList.add('desktop-hidden');
     }
   }
+}
+
+function _toggleQueueFloating() {
+  const next = !st.prefs.queue_floating;
+  savePrefs({ queue_floating: next });
+  _applyQueueFloating(next);
 }
 
 // ── Queue Panel Toggle (desktop collapse/float + mobile overlay) ──────────────

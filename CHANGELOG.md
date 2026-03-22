@@ -9,6 +9,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.1] - 2026-03-21 — Mobile & UI Polish
+
+### Fixed
+- **Mobile action bar fully visible** — Sources & Destinations now auto-collapses on mobile (≤480 px) when you select a file, freeing the vertical space needed for all three action buttons (Add to Queue, Run Now, Clear). It restores to your saved preference when the selection is cleared.
+- **Sticky sort header transparent when scrolling** — column header row now has `z-index: 1` so it stays fully opaque when scrolling past dimmed/unknown rows.
+- **Modified column right edge clipping** — added 10 px right padding to both the Modified header cell and its data cells so the timestamp is never flush against the edge of the window.
+
+---
+
 ## [1.3.0] - 2026-03-21 — Queue Toggle, Live Transfer Progress & Toolbar Polish
 
 ### Added

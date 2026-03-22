@@ -150,7 +150,7 @@
     .file-list-wrap { flex: 1; overflow-y: auto; min-height: 0; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
-      position: sticky; top: 0;
+      position: sticky; top: 0; z-index: 1;
       background: var(--surface2); padding: 0.57em 6px;
       text-align: left; font-size: var(--fz-sm); font-weight: 600;
       text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim);
@@ -604,8 +604,9 @@
 
       /* Action bar */
       .ab-row .label { font-size: var(--fz-sm); }
-      #action-bar { padding: 0.46em 10px 0.62em; }
-      .ab-bottom { flex-wrap: nowrap; align-items: center; }
+      #action-bar { padding: 6px 10px 8px; gap: 0; }
+      .ab-checkboxes { margin-top: 4px; padding-top: 4px; }
+      .ab-bottom { flex-wrap: nowrap; align-items: center; margin-top: 4px; padding-top: 5px; }
       /* Hide the action preview text on small screens — buttons are what matter */
       .ab-preview { display: none; }
 
@@ -655,7 +656,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.0</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.1</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -732,7 +733,7 @@
             <th class="sortable col-right" onclick="sortBy('size')">
               Size <span id="sort-size">↕</span>
             </th>
-            <th class="sortable col-right" onclick="sortBy('modified')">
+            <th class="sortable col-right" onclick="sortBy('modified')" style="padding-right:10px">
               Modified <span id="sort-modified">↕</span>
             </th>
           </tr>
@@ -1710,9 +1711,21 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.1</span>
+          <span class="cl-version-name">Mobile &amp; UI Polish</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Fixed:</strong> Sources &amp; Destinations auto-collapses on mobile when you select a file, so all action buttons are always reachable</li>
+          <li><strong>Fixed:</strong> Sticky sort header is now fully opaque when scrolling past dimmed/unknown rows</li>
+          <li><strong>Fixed:</strong> Modified column timestamp no longer flush against the right edge of the window</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.3.0</span>
           <span class="cl-version-name">Queue Toggle, Live Transfer Progress &amp; Toolbar Polish</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Added:</strong> ☰ queue toggle always visible in header — collapses/expands the sidebar on desktop; mobile overlay behaviour unchanged</li>
@@ -2858,7 +2871,7 @@ function renderFiles() {
       <td class="col-right"><span class="source-badge">${esc(f.source_label)}</span></td>
       <td class="col-right">${renderMediaTypeSelect(f)}</td>
       <td class="file-size col-right" id="size-cell-${cssId(f.path)}">${sizeTxt}</td>
-      <td class="file-date col-right">${dateTxt}</td>
+      <td class="file-date col-right" style="padding-right:10px">${dateTxt}</td>
     `;
     frag.appendChild(tr);
   });
@@ -2974,6 +2987,14 @@ function updateSelectionUI() {
   const n = st.selected.size;
   document.getElementById('action-bar').classList.toggle('visible', n > 0);
   document.getElementById('ab-sel-count').textContent = `${n} selected`;
+  // On mobile, auto-collapse Sources & Destinations when action bar appears to free vertical space
+  if (window.innerWidth <= 480) {
+    if (n > 0) {
+      _applyFilterBarState(true);  // collapse without saving pref
+    } else {
+      _applyFilterBarState(st.prefs.src_filter_expanded === false);  // restore user pref
+    }
+  }
   const vis = visibleFiles();
   const selectable = vis.filter(f => getMediaType(f) !== 'unknown' && !isQueueLocked(f.path));
   document.getElementById('select-all').checked = selectable.length > 0 && selectable.every(f => st.selected.has(f.path));

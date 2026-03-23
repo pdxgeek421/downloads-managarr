@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.7] - 2026-03-22 — Trash Total Size
+
+### Added
+- **Trash panel total size** — a muted "X.X GB total" label now appears at the top-left of the Trash toolbar, summing the sizes of all items currently in trash. Clears automatically when trash is empty.
+
+---
+
 ## [1.3.6] - 2026-03-22 — Queue Persistence, Progress & Trash Restore
 
 ### Fixed

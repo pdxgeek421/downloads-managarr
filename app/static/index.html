@@ -498,6 +498,7 @@
 
     /* Trash modal */
     .trash-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .trash-size-label { flex: 1; font-size: var(--fz-sm); color: var(--text-dim); }
     .trash-list { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; }
     .trash-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.62em 12px; }
     .trash-item-icon { font-size: 18px; flex-shrink: 0; }
@@ -675,7 +676,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.6</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.7</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -1314,6 +1315,7 @@
         <a href="#" style="color:var(--accent);margin-left:6px" onclick="closeModal('trash-overlay');openSettings();showSettingsTab('library');return false">Add in Settings →</a>
       </div>
       <div class="trash-toolbar">
+        <span id="trash-total-size" class="trash-size-label"></span>
         <button class="btn btn-danger btn-sm" onclick="emptyTrash()">Empty Trash</button>
       </div>
       <div class="trash-list" id="trash-list">
@@ -1732,9 +1734,19 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
-          <span class="cl-version-num">v1.3.6</span>
-          <span class="cl-version-name">Queue Persistence, Progress & Trash Restore</span>
+          <span class="cl-version-num">v1.3.7</span>
+          <span class="cl-version-name">Trash Total Size</span>
           <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Added:</strong> Trash panel now shows a muted "X.X GB total" label at the top of the toolbar, summing the sizes of all trashed items; clears when trash is empty</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.6</span>
+          <span class="cl-version-name">Queue Persistence, Progress &amp; Trash Restore</span>
         </div>
         <ul class="cl-items">
           <li><strong>Fixed:</strong> Floating queue mode now defaults to <strong>on</strong> and persists correctly across refreshes — preference mirrored to localStorage so it survives even when server prefs can't be written</li>
@@ -5183,9 +5195,15 @@ async function loadTrash() {
 
 function renderTrash(items) {
   const listEl = document.getElementById('trash-list');
+  const sizeEl = document.getElementById('trash-total-size');
   if (!items || items.length === 0) {
     listEl.innerHTML = '<div class="trash-empty-msg">Trash is empty</div>';
+    if (sizeEl) sizeEl.textContent = '';
     return;
+  }
+  if (sizeEl) {
+    const total = items.reduce((sum, it) => sum + (it.size || 0), 0);
+    sizeEl.textContent = humanSize(total) + ' total';
   }
   listEl.innerHTML = items.map((item, i) => {
     const icon = item.type === 'folder' ? '📁' : fileIcon(item.name);

@@ -59,7 +59,7 @@ There's no good middle ground. Until you just... build one.
 - **Three trash modes** — Off (disabled), Auto (creates `.Trash` beside the source file automatically — default), or Custom (explicit path)
 - **Move to Trash** — soft-delete to the configured/auto trash location (reversible)
 - **Permanent Delete** — confirmation-gated, no takebacks
-- Dedicated **Trash panel** — browse, restore, or permanently delete individual items; restore automatically returns files to the source folder corresponding to their `.Trash` location (no destination picker needed)
+- Dedicated **Trash panel** — browse, restore, or permanently delete individual items; restore automatically returns files to the source folder corresponding to their `.Trash` location (no destination picker needed); total size of all trashed items shown at the top
 - **Empty Trash** to clear everything at once
 
 ### History Log

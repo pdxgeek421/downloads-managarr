@@ -676,7 +676,7 @@
     <div class="logo-icon">⬇</div>
     <div class="logo-text">
       <span>Downloads<span class="dim">Managarr</span></span>
-      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.7</span>
+      <span class="version-tag" onclick="openChangelog()" title="View changelog">v1.3.8</span>
     </div>
   </div>
   <div class="spacer"></div>
@@ -1734,9 +1734,19 @@
 
       <div class="cl-version">
         <div class="cl-version-header">
+          <span class="cl-version-num">v1.3.8</span>
+          <span class="cl-version-name">❓ Toggle Initial State Fix</span>
+          <span class="cl-version-badge">current</span>
+        </div>
+        <ul class="cl-items">
+          <li><strong>Fixed:</strong> ❓ (show unrecognised files) button now correctly appears lit/active on initial page load — <code>_updateFilterButtons()</code> was never called during the initial file load, so the button always rendered as inactive even though the filter was enabled</li>
+        </ul>
+      </div>
+
+      <div class="cl-version">
+        <div class="cl-version-header">
           <span class="cl-version-num">v1.3.7</span>
           <span class="cl-version-name">Trash Total Size</span>
-          <span class="cl-version-badge">current</span>
         </div>
         <ul class="cl-items">
           <li><strong>Added:</strong> Trash panel now shows a muted "X.X GB total" label at the top of the toolbar, summing the sizes of all trashed items; clears when trash is empty</li>
@@ -2659,6 +2669,7 @@ async function loadFiles() {
   st.folderSizes = {};
   renderWarnings(data.missing_paths || []);
   renderBreadcrumb();
+  _updateFilterButtons();
   renderFiles();
   renderActionBarDestinations();
   updateTrashAvailability();

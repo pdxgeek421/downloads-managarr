@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.8] - 2026-03-22 — ❓ Toggle Initial State Fix
+
+### Fixed
+- **❓ toggle not lit on page load** — `_updateFilterButtons()` was never called during the initial file load, so the ❓ (show unrecognised files) button always rendered inactive even though `st.filterShowUnknown` was `true`. Added the call to `loadFiles()` before `renderFiles()` so the button reflects the correct state from the first paint.
+
+---
+
 ## [1.3.7] - 2026-03-22 — Trash Total Size
 
 ### Added
